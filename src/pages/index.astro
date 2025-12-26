@@ -1,16 +1,75 @@
 ---
-
+import { getCollection } from 'astro:content';
+const posts = (await getCollection('blog')).sort(
+  (a, b) => b.data.pubDate.valueOf() - a.data.pubDate.valueOf()
+);
 ---
 
-<html lang="en">
-	<head>
-		<meta charset="utf-8" />
-		<link rel="icon" type="image/svg+xml" href="/favicon.svg" />
-		<meta name="viewport" content="width=device-width" />
-		<meta name="generator" content={Astro.generator} />
-		<title>Astro</title>
-	</head>
-	<body>
-		<h1>Astro</h1>
-	</body>
+<html lang="ko">
+  <head>
+    <meta charset="utf-8" />
+    <title>조용한 세계문학 서재</title>
+    <style>
+      body { font-family: 'serif'; background-color: #f9f7f2; color: #1a1a1a; margin: 0; line-height: 1.6; }
+      nav { display: flex; justify-content: space-between; align-items: center; padding: 20px 50px; background: white; border-bottom: 1px solid #eee; }
+      .logo { font-weight: bold; font-size: 1.2rem; }
+      .menu a { margin: 0 15px; text-decoration: none; color: #333; font-weight: 500; }
+      .icons a { margin-left: 10px; text-decoration: none; font-size: 1.2rem; }
+      
+      main { max-width: 800px; margin: 80px auto; text-align: center; }
+      h1 { font-size: 3rem; margin-bottom: 40px; font-weight: 500; }
+      .intro-text { color: #444; margin-bottom: 50px; white-space: pre-line; }
+      
+      .blog-section { text-align: left; margin-top: 100px; }
+      .post-item { margin-bottom: 20px; list-style: none; }
+      .post-item a { font-size: 1.2rem; color: #000; text-decoration: none; border-bottom: 1px solid #ccc; }
+      
+      footer { margin-top: 150px; padding: 50px; font-size: 0.9rem; color: #888; border-top: 1px solid #eee; }
+    </style>
+  </head>
+  <body>
+    <nav>
+      <div class="logo">조용한 세계문학 서재</div>
+      <div class="menu">
+        <a href="/">홈</a>
+        <a href="#">북리뷰</a>
+        <a href="#">북영상</a>
+      </div>
+      <div class="icons">
+        <a href="#" title="Naver">N</a>
+        <a href="#" title="YouTube">▶</a>
+      </div>
+    </nav>
+
+    <main>
+      <h1>안녕하세요, gedsc입니다</h1>
+      <p class="intro-text">
+        이곳은 세계문학을 읽고,<br>
+        그 내용을 요약하고 해석하며<br>
+        개인적인 감상과 사유를 기록하는 공간입니다.<br><br>
+        고전 문학 작품을 중심으로<br>
+        이야기의 핵심과 주제를 정리하고,<br>
+        오늘의 언어로 다시 풀어냅니다.
+      </p>
+
+      <div class="blog-section">
+        <h2>최근 기록 (블로그)</h2>
+        <ul>
+          {posts.map(post => (
+            <li class="post-item">
+              <a href={`/blog/${post.id}`}>{post.data.title}</a>
+              <span style="color:#999; font-size:0.8rem; margin-left:10px;">{post.data.pubDate.toLocaleDateString()}</span>
+            </li>
+          ))}
+        </ul>
+      </div>
+    </main>
+
+    <footer>
+      <p>© 2025 gedsc · 세계문학 기록실</p>
+      <p>세계문학을 읽고, 요약하고, 해석하며 천천히 남기는 개인 기록 공간입니다.</p>
+      <p>블로그 · 유튜브</p>
+      <p style="font-size: 0.8rem; margin-top:20px;">일부 콘텐츠는 AI의 도움을 받아 작성되었습니다.</p>
+    </footer>
+  </body>
 </html>
