@@ -40,34 +40,36 @@ article time {
   color: #111;
 }
 
-/* 강조 문단 (첫 인사말 느낌) */
+/* 🔥 마크다운 bold(** **) 제거 핵심 */
 .se-text-paragraph strong {
-  font-weight: 600;
+  font-weight: 400;      /* bold 제거 */
 }
 
 /* =========================================================
-   네이버 이미지 처리 (핵심!)
+   네이버 이미지 처리
    ========================================================= */
 
-/* 이미지 블록 전체를 중앙 정렬 */
+/* 이미지 블록 전체 중앙 정렬 */
 .se-component.se-image {
   display: flex;
   justify-content: center;
-  margin: 3rem 0;
+  margin: 3.5rem 0;
 }
 
-/* 이미지 크기 조절 */
+/* 이미지 크기 – 본문 폭 거의 가득 */
 .se-component.se-image img {
-  max-width: 80%;
+  width: 100%;
+  max-width: 720px;
   height: auto;
-  border-radius: 6px;
-  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.12);
+  border-radius: 10px;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.14);
 }
 
 /* 모바일 대응 */
 @media (max-width: 640px) {
   .se-component.se-image img {
     max-width: 100%;
+    border-radius: 8px;
   }
 }
 
@@ -82,7 +84,7 @@ article time {
 }
 
 /* =========================================================
-   인용 / 감성 문단용 (선택 활용)
+   인용 / 감성 문단용
    ========================================================= */
 
 .se-text-paragraph em {
