@@ -1,1 +1,29 @@
+---
+import { getCollection } from 'astro:content';
+const allPosts = await getCollection('blog'); // 블로그 콘텐츠 가져오기
+---
 
+<html>
+  <body>
+    <nav style="text-align: center; padding: 20px;">
+      <a href="/">홈</a> | <a href="/review">북리뷰</a> | <a href="/video">북영상</a>
+    </nav>
+
+    <main style="max-width: 800px; margin: 0 auto; padding: 20px;">
+      <h1>북리뷰</h1>
+      <p>기록하고 공유하는 공간</p>
+      
+      <hr />
+
+      <h2>최근 기록</h2>
+      <ul>
+        {allPosts.map((post) => (
+          <li style="margin-bottom: 10px;">
+            <a href={`/blog/${post.slug}`}>{post.data.title}</a>
+            <span style="color: #888; margin-left: 10px;">{post.data.pubDate?.toLocaleDateString()}</span>
+          </li>
+        ))}
+      </ul>
+    </main>
+  </body>
+</html>
