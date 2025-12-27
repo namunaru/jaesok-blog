@@ -1,44 +1,56 @@
 ---
 import { getCollection, render } from 'astro:content';
 import BaseLayout from '../../layouts/BaseLayout.astro';
+import Comments from '../../components/Comments.astro';
+import PostNavigation from '../../components/PostNavigation.astro';
 import '../../styles/blog.css';
 
-/* 정적 경로 */
+/* 모든 글 */
+const allPosts = (await getCollection('blog'))
+  .filter(p => !p.data.draft)
+  .sort((a, b) => (a.data.pubDate?.getTime() ?? 0) - (b.data.pubDate?.getTime() ?? 0));
+
 export async function getStaticPaths() {
-  const posts = await getCollection('blog');
-  return posts
-    .filter(p => !p.data.draft)
-    .map(p => ({
-      params: { slug: p.slug },
-      props: { post: p }
-    }));
+  return allPosts.map(p => ({
+    params: { slug: p.slug },
+    props: { post: p }
+  }));
 }
 
 const { post } = Astro.props;
-const { Content } = await render(post);
+const index = allPosts.findIndex(p => p.slug === post.slug);
+const prev = index > 0 ? allPosts[index - 1] : null;
+const next = index < allPosts.length - 1 ? allPosts[index + 1] : null;
 
-const publishedDate = post.data.pubDate
-  ? post.data.pubDate.toLocaleDateString()
-  : '';
+const { Content, html } = await render(post);
+
+/* 대표 이미지 추출 (첫 img) */
+const heroMatch = html.match(/<img[^>]+src="([^">]+)"/);
+const heroImage = heroMatch ? heroMatch[1] : null;
+
+const publishedDate = post.data.pubDate?.toLocaleDateString() ?? '';
 ---
 
 <BaseLayout title={`${post.data.title} | 조용한 세계문학 서재`}>
   <article class="post-article">
+
+    {heroImage && (
+      <div class="post-hero">
+        <img src={heroImage} alt={post.data.title} />
+      </div>
+    )}
+
     <header class="post-header">
       <h1>{post.data.title}</h1>
       <time>{publishedDate}</time>
     </header>
 
-    <!-- 본문 -->
     <section class="post-content">
       <Content />
     </section>
 
-    <!-- 하단 -->
-    <nav class="post-nav">
-      <a href="/review" class="back-link">
-        ← 북리뷰 게시판으로 돌아가기
-      </a>
-    </nav>
+    <PostNavigation prev={prev} next={next} />
+    <Comments />
+
   </article>
 </BaseLayout>
