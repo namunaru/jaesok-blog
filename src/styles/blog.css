@@ -1,33 +1,82 @@
-/* =========================================================
-   네이버 이미지 – 실제 구조 기준 (핵심 수정)
-   ========================================================= */
-
-.se-component.se-image {
-  display: flex;
-  justify-content: center;
-  margin: 4rem 0;
-}
-
-/* 모든 중간 div 폭 강제 해제 */
-.se-component.se-image,
-.se-component.se-image * {
-  max-width: 100% !important;
-}
-
-/* 실제 이미지 */
-.se-component.se-image img {
-  width: 100%;
-  max-width: 760px;
-  height: auto;
-  border-radius: 12px;
-  box-shadow: 0 12px 36px rgba(0, 0, 0, 0.15);
-  display: block;
+/* ===== 글 전체 레이아웃 ===== */
+.post-article {
+  max-width: 820px;
   margin: 0 auto;
+  padding: 70px 40px;
+  background: #fff;
+  border: 1px solid #eee;
 }
 
-/* 모바일 */
-@media (max-width: 640px) {
-  .se-component.se-image img {
-    border-radius: 8px;
-  }
+/* ===== 제목 ===== */
+.post-header {
+  text-align: center;
+  margin-bottom: 80px;
+}
+
+.post-header h1 {
+  font-size: 2.4rem;
+  font-weight: 500;
+  line-height: 1.4;
+}
+
+.post-header time {
+  display: block;
+  margin-top: 16px;
+  color: #888;
+  font-size: 0.9rem;
+}
+
+/* ===== 본문 (문학적 톤) ===== */
+.post-content {
+  text-align: center;
+  font-family: 'Noto Serif KR', serif;
+  font-size: 1.08rem;
+  line-height: 2.05;
+  letter-spacing: -0.01em;
+}
+
+.post-content p {
+  margin: 2.2em 0;
+}
+
+/* ===== 강조 제거 ( ** 처리 대비 ) ===== */
+.post-content strong {
+  font-weight: 500;
+}
+
+/* ===== 이미지: 풀블리드 ===== */
+.post-content .se-component.se-image {
+  margin: 5rem 0;
+}
+
+.post-content .se-component.se-image img {
+  width: 100%;
+  max-width: none;
+  height: auto;
+  border-radius: 8px;
+  box-shadow: 0 16px 40px rgba(0, 0, 0, 0.15);
+}
+
+/* ===== 인용 ===== */
+.post-content blockquote {
+  margin: 4rem auto;
+  font-style: italic;
+  color: #555;
+}
+
+/* ===== 하단 ===== */
+.post-nav {
+  margin-top: 120px;
+  text-align: center;
+}
+
+.back-link {
+  text-decoration: none;
+  color: #333;
+  font-size: 1rem;
+  border-bottom: 1px solid #aaa;
+}
+
+.back-link:hover {
+  opacity: 0.7;
 }
