@@ -5,7 +5,9 @@ import Comments from '../../components/Comments.astro';
 import PostNavigation from '../../components/PostNavigation.astro';
 import '../../styles/blog.css';
 
-/* ✅ 정적 경로 생성 (반드시 내부에서 호출) */
+/* =========================
+   정적 경로 생성
+========================= */
 export async function getStaticPaths() {
   const posts = (await getCollection('blog'))
     .filter(p => !p.data.draft)
@@ -21,10 +23,12 @@ export async function getStaticPaths() {
   }));
 }
 
-/* ✅ 여기부터는 페이지 렌더링 영역 */
+/* =========================
+   페이지 렌더링
+========================= */
 const { post } = Astro.props;
 
-/* 전체 글 목록 (이전/다음용) */
+/* 이전 / 다음 글 계산 */
 const allPosts = (await getCollection('blog'))
   .filter(p => !p.data.draft)
   .sort(
@@ -39,13 +43,15 @@ const next = index < allPosts.length - 1 ? allPosts[index + 1] : null;
 
 /* 본문 렌더 */
 const rendered = await render(post);
-const Content = rendered.Content;
-const html = typeof rendered.html === 'string' ? rendered.html : '';
+const { Content, html } = rendered;
 
 /* 대표 이미지 (첫 img) */
-const heroMatch = html.match(/<img[^>]+src="([^">]+)"/);
-const heroImage = heroMatch ? heroMatch[1] : null;
+const heroMatch =
+  typeof html === 'string'
+    ? html.match(/<img[^>]+src="([^">]+)"/)
+    : null;
 
+const heroImage = heroMatch ? heroMatch[1] : null;
 const publishedDate = post.data.pubDate?.toLocaleDateString() ?? '';
 ---
 
@@ -68,6 +74,7 @@ const publishedDate = post.data.pubDate?.toLocaleDateString() ?? '';
     </section>
 
     <PostNavigation prev={prev} next={next} />
+
     <Comments />
 
   </article>
