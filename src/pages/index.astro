@@ -1,18 +1,29 @@
 ---
 import { getCollection } from 'astro:content';
 
-// 1. 블로그 글 불러오기
-const allPosts = await getCollection('blog');
-
-// 2. draft 제외 + 안전한 정렬
-const posts = allPosts
+/* =========================
+   Blog (최근 3개)
+========================= */
+const blogPosts = (await getCollection('blog'))
   .filter(post => !post.data.draft)
   .sort((a, b) => {
-    const aTime = a.data.pubDate ? a.data.pubDate.getTime() : 0;
-    const bTime = b.data.pubDate ? b.data.pubDate.getTime() : 0;
+    const aTime = a.data.pubDate?.getTime() ?? 0;
+    const bTime = b.data.pubDate?.getTime() ?? 0;
     return bTime - aTime;
   })
-  .slice(0, 5); // 홈에서는 최근 5개만
+  .slice(0, 3);
+
+/* =========================
+   Video (최근 3개)
+========================= */
+const videoPosts = (await getCollection('video'))
+  .filter(post => !post.data.draft)
+  .sort((a, b) => {
+    const aTime = a.data.pubDate?.getTime() ?? 0;
+    const bTime = b.data.pubDate?.getTime() ?? 0;
+    return bTime - aTime;
+  })
+  .slice(0, 3);
 ---
 
 <html lang="ko">
@@ -71,47 +82,46 @@ const posts = allPosts
 
       .intro-text {
         color: #444;
-        margin-bottom: 50px;
+        margin-bottom: 60px;
         white-space: pre-line;
       }
 
-      .blog-section {
-        text-align: center;
-        margin-top: 120px;
+      section {
+        margin-top: 100px;
       }
 
-      .blog-section h2 {
+      h2 {
         font-size: 1.5rem;
         margin-bottom: 30px;
       }
 
-      .blog-section ul {
+      ul {
         padding: 0;
         list-style: none;
         display: inline-block;
         text-align: left;
       }
 
-      .post-item {
-        margin-bottom: 20px;
+      li {
+        margin-bottom: 18px;
       }
 
-      .post-item a {
-        font-size: 1.2rem;
+      a.item-link {
+        font-size: 1.15rem;
         color: #000;
         text-decoration: none;
         border-bottom: 1px solid #ccc;
         transition: 0.3s;
       }
 
-      .post-item a:hover {
+      a.item-link:hover {
         border-bottom: 1px solid #000;
       }
 
-      .post-date {
+      .date {
         color: #999;
         font-size: 0.8rem;
-        margin-left: 15px;
+        margin-left: 12px;
       }
 
       footer {
@@ -136,19 +146,8 @@ const posts = allPosts
       </div>
 
       <div class="icons">
-        <a
-          href="https://blog.naver.com/gedsc"
-          target="_blank"
-          title="Naver"
-          style="color:#03C75A;"
-        >N</a>
-
-        <a
-          href="https://www.youtube.com/@gedsc"
-          target="_blank"
-          title="YouTube"
-          style="color:#FF0000;"
-        >▶</a>
+        <a href="https://blog.naver.com/gedsc" target="_blank" style="color:#03C75A;">N</a>
+        <a href="https://www.youtube.com/@gedsc" target="_blank" style="color:#FF0000;">▶</a>
       </div>
     </nav>
 
@@ -158,28 +157,47 @@ const posts = allPosts
       <p class="intro-text">
         이곳은 세계문학을 읽고,<br>
         그 내용을 요약하고 해석하며<br>
-        개인적인 감상과 사유를 기록하는 공간입니다.<br><br>
-        고전 문학 작품을 중심으로<br>
-        이야기의 핵심과 주제를 정리하고,<br>
-        오늘의 언어로 다시 풀어냅니다.
+        개인적인 감상과 사유를 기록하는 공간입니다.
       </p>
 
-      <section class="blog-section">
-        <h2>최근 기록 (블로그)</h2>
-
-        {posts.length === 0 ? (
+      <!-- 블로그 -->
+      <section>
+        <h2>최근 기록 · 글</h2>
+        {blogPosts.length === 0 ? (
           <p style="color:#999;">아직 등록된 글이 없습니다.</p>
         ) : (
           <ul>
-            {posts.map(post => (
-              <li class="post-item">
-                <a href={`/blog/${post.slug}`}>
+            {blogPosts.map(post => (
+              <li>
+                <a class="item-link" href={`/blog/${post.slug}`}>
                   {post.data.title}
                 </a>
-
                 {post.data.pubDate && (
-                  <span class="post-date">
+                  <span class="date">
                     {post.data.pubDate.toLocaleDateString()}
+                  </span>
+                )}
+              </li>
+            ))}
+          </ul>
+        )}
+      </section>
+
+      <!-- 영상 -->
+      <section>
+        <h2>최근 기록 · 영상</h2>
+        {videoPosts.length === 0 ? (
+          <p style="color:#999;">아직 등록된 영상이 없습니다.</p>
+        ) : (
+          <ul>
+            {videoPosts.map(video => (
+              <li>
+                <a class="item-link" href={`/video/${video.slug}`}>
+                  ▶ {video.data.title}
+                </a>
+                {video.data.pubDate && (
+                  <span class="date">
+                    {video.data.pubDate.toLocaleDateString()}
                   </span>
                 )}
               </li>
@@ -191,11 +209,7 @@ const posts = allPosts
 
     <footer>
       <p>© 2025 gedsc · 세계문학 기록실</p>
-      <p>세계문학을 읽고, 요약하고, 해석하며 천천히 남기는 개인 기록 공간입니다.</p>
-      <p>블로그 · 유튜브</p>
-      <p style="font-size:0.8rem; margin-top:20px;">
-        일부 콘텐츠는 AI의 도움을 받아 작성되었습니다.
-      </p>
+      <p>일부 콘텐츠는 AI의 도움을 받아 작성되었습니다.</p>
     </footer>
   </body>
 </html>
