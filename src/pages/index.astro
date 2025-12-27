@@ -50,9 +50,16 @@ const videoPosts = (await getCollection('video'))
         border-bottom: 1px solid #eee;
       }
 
-      .logo {
+      /* 로고 */
+      .logo a {
         font-weight: bold;
         font-size: 1.2rem;
+        color: #1a1a1a;
+        text-decoration: none;
+      }
+
+      .logo a:hover {
+        opacity: 0.8;
       }
 
       .menu a {
@@ -60,6 +67,10 @@ const videoPosts = (await getCollection('video'))
         text-decoration: none;
         color: #333;
         font-weight: 500;
+      }
+
+      .menu a:hover {
+        text-decoration: underline;
       }
 
       .icons a {
@@ -138,7 +149,10 @@ const videoPosts = (await getCollection('video'))
 
   <body>
     <nav>
-      <div class="logo">조용한 세계문학 서재</div>
+      <!-- ✅ 클릭하면 홈으로 이동 -->
+      <div class="logo">
+        <a href="/">조용한 세계문학 서재</a>
+      </div>
 
       <div class="menu">
         <a href="/">홈</a>
