@@ -1,56 +1,44 @@
 ---
 import { getCollection, render } from 'astro:content';
-import "../../styles/blog.css";
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import '../../styles/blog.css';
 
-/* =========================
-   1. 정적 경로 생성
-========================= */
+/* 정적 경로 */
 export async function getStaticPaths() {
   const posts = await getCollection('blog');
-
   return posts
-    .filter(post => !post.data.draft)
-    .map(post => ({
-      params: { slug: post.slug },
-      props: { post },
+    .filter(p => !p.data.draft)
+    .map(p => ({
+      params: { slug: p.slug },
+      props: { post: p }
     }));
 }
 
-/* =========================
-   2. 개별 글 렌더링
-========================= */
 const { post } = Astro.props;
 const { Content } = await render(post);
 
 const publishedDate = post.data.pubDate
   ? post.data.pubDate.toLocaleDateString()
-  : '날짜 미정';
+  : '';
 ---
 
-<html lang="ko">
-  <head>
-    <meta charset="utf-8" />
-    <title>{post.data.title} | 조용한 세계문학 서재</title>
-  </head>
+<BaseLayout title={`${post.data.title} | 조용한 세계문학 서재`}>
+  <article class="post-article">
+    <header class="post-header">
+      <h1>{post.data.title}</h1>
+      <time>{publishedDate}</time>
+    </header>
 
-  <body>
-    <article class="post-article">
-      <header class="post-header">
-        <h1>{post.data.title}</h1>
-        <time>{publishedDate}</time>
-      </header>
+    <!-- 본문 -->
+    <section class="post-content">
+      <Content />
+    </section>
 
-      <!-- ✅ 본문 -->
-      <section class="post-content">
-        <Content />
-      </section>
-
-      <!-- ✅ 하단 이동 -->
-      <nav class="post-nav">
-        <a href="/review" class="back-link">
-          ← 북리뷰 게시판으로 돌아가기
-        </a>
-      </nav>
-    </article>
-  </body>
-</html>
+    <!-- 하단 -->
+    <nav class="post-nav">
+      <a href="/review" class="back-link">
+        ← 북리뷰 게시판으로 돌아가기
+      </a>
+    </nav>
+  </article>
+</BaseLayout>
