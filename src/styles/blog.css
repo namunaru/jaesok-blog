@@ -1,111 +1,33 @@
 /* =========================================================
-   기본 레이아웃
+   네이버 이미지 – 실제 구조 기준 (핵심 수정)
    ========================================================= */
 
-/* 전체 글 폭 정리 (가독성 핵심) */
-.se-main-container {
-  max-width: 760px;
-  margin: 0 auto;
-  padding: 0 1rem;
-}
-
-/* =========================================================
-   제목 / 메타 정보
-   ========================================================= */
-
-article h1 {
-  text-align: center;
-  margin-bottom: 0.5rem;
-}
-
-article .post-meta,
-article time {
-  display: block;
-  text-align: center;
-  color: #777;
-  font-size: 0.9rem;
-  margin-bottom: 3rem;
-}
-
-/* =========================================================
-   네이버 본문 텍스트 정렬
-   ========================================================= */
-
-/* 모든 네이버 문단 가운데 정렬 */
-.se-text-paragraph {
-  text-align: center;
-  font-size: 1.05rem;
-  line-height: 1.9;
-  margin: 1.6rem 0;
-  color: #111;
-}
-
-/* 🔥 마크다운 bold(** **) 제거 핵심 */
-.se-text-paragraph strong {
-  font-weight: 400;      /* bold 제거 */
-}
-
-/* =========================================================
-   네이버 이미지 처리
-   ========================================================= */
-
-/* 이미지 블록 전체 중앙 정렬 */
 .se-component.se-image {
   display: flex;
   justify-content: center;
-  margin: 3.5rem 0;
+  margin: 4rem 0;
 }
 
-/* 이미지 크기 – 본문 폭 거의 가득 */
+/* 모든 중간 div 폭 강제 해제 */
+.se-component.se-image,
+.se-component.se-image * {
+  max-width: 100% !important;
+}
+
+/* 실제 이미지 */
 .se-component.se-image img {
   width: 100%;
-  max-width: 720px;
+  max-width: 760px;
   height: auto;
-  border-radius: 10px;
-  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.14);
+  border-radius: 12px;
+  box-shadow: 0 12px 36px rgba(0, 0, 0, 0.15);
+  display: block;
+  margin: 0 auto;
 }
 
-/* 모바일 대응 */
+/* 모바일 */
 @media (max-width: 640px) {
   .se-component.se-image img {
-    max-width: 100%;
     border-radius: 8px;
   }
-}
-
-/* =========================================================
-   구분선 / 여백
-   ========================================================= */
-
-.se-hr {
-  border: none;
-  border-top: 1px solid #ddd;
-  margin: 3.5rem 0;
-}
-
-/* =========================================================
-   인용 / 감성 문단용
-   ========================================================= */
-
-.se-text-paragraph em {
-  font-style: normal;
-  color: #444;
-}
-
-/* =========================================================
-   하단 네비게이션 버튼
-   ========================================================= */
-
-.back-link {
-  display: inline-block;
-  margin: 4rem auto 2rem;
-  text-align: center;
-  font-size: 1rem;
-  color: #333;
-  text-decoration: none;
-  border-bottom: 1px solid #333;
-}
-
-.back-link:hover {
-  opacity: 0.7;
 }
