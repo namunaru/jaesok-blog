@@ -1,39 +1,119 @@
 ---
 import { getCollection, render } from 'astro:content';
 
-// 1. 모든 글의 경로를 미리 생성합니다.
+/**
+ * 1. 정적 경로 생성
+ * - draft 글 제외
+ * - slug는 post.slug 기준
+ */
 export async function getStaticPaths() {
   const posts = await getCollection('blog');
-  return posts.map((post) => ({
-    params: { slug: post.id }, // id를 slug로 사용
-    props: { post },
-  }));
+
+  return posts
+    .filter(post => !post.data.draft)
+    .map(post => ({
+      params: { slug: post.slug },
+      props: { post },
+    }));
 }
 
-// 2. 전달받은 글 데이터를 렌더링합니다.
+/**
+ * 2. 개별 글 렌더링
+ */
 const { post } = Astro.props;
 const { Content } = await render(post);
+
+// 날짜 안전 처리
+const publishedDate = post.data.pubDate
+  ? post.data.pubDate.toLocaleDateString()
+  : '날짜 미정';
 ---
+
 <html lang="ko">
   <head>
     <meta charset="utf-8" />
-    <title>{post.data.title}</title>
+    <title>{post.data.title} | 조용한 세계문학 서재</title>
+
     <style>
-      body { font-family: 'serif'; background-color: #f9f7f2; color: #1a1a1a; margin: 0; line-height: 1.8; }
-      article { max-width: 800px; margin: 60px auto; padding: 20px; background: white; border-radius: 8px; box-shadow: 0 2px 10px rgba(0,0,0,0.05); }
-      h1 { font-size: 2.5rem; border-bottom: 2px solid #eee; padding-bottom: 20px; }
-      .date { color: #888; margin-bottom: 40px; }
-      .back-link { display: block; margin-top: 50px; text-decoration: none; color: #333; font-weight: bold; }
+      body {
+        font-family: 'serif';
+        background-color: #f9f7f2;
+        color: #1a1a1a;
+        margin: 0;
+        line-height: 1.9;
+      }
+
+      article {
+        max-width: 820px;
+        margin: 80px auto;
+        padding: 50px 40px;
+        background: white;
+        border: 1px solid #eee;
+      }
+
+      h1 {
+        font-size: 2.4rem;
+        font-weight: 500;
+        margin-bottom: 10px;
+      }
+
+      .meta {
+        color: #888;
+        font-size: 0.9rem;
+        margin-bottom: 50px;
+      }
+
+      .content {
+        font-size: 1.05rem;
+      }
+
+      .content :global(p) {
+        margin-bottom: 1.6em;
+      }
+
+      .content :global(h2) {
+        margin-top: 3em;
+        margin-bottom: 1em;
+        font-size: 1.6rem;
+        border-bottom: 1px solid #eee;
+        padding-bottom: 10px;
+      }
+
+      .content :global(blockquote) {
+        margin: 2em 0;
+        padding-left: 20px;
+        color: #555;
+        border-left: 3px solid #ddd;
+        font-style: italic;
+      }
+
+      .back-link {
+        display: inline-block;
+        margin-top: 80px;
+        text-decoration: none;
+        color: #333;
+        font-weight: 500;
+        border-bottom: 1px solid #ccc;
+      }
+
+      .back-link:hover {
+        border-bottom-color: #000;
+      }
     </style>
   </head>
+
   <body>
     <article>
       <h1>{post.data.title}</h1>
-      <p class="date">작성일: {post.data.pubDate.toLocaleDateString()}</p>
+      <div class="meta">작성일 · {publishedDate}</div>
+
       <div class="content">
         <Content />
       </div>
-      <a href="/" class="back-link">← 목록으로 돌아가기</a>
+
+      <a href="/blog" class="back-link">
+        ← 블로그 목록으로 돌아가기
+      </a>
     </article>
   </body>
 </html>
