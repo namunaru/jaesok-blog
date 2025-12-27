@@ -2,9 +2,9 @@
 import { getCollection, render } from 'astro:content';
 import "../../styles/blog.css";
 
-/**
- * 1. 정적 경로 생성
- */
+/* =========================
+   1. 정적 경로 생성
+========================= */
 export async function getStaticPaths() {
   const posts = await getCollection('blog');
 
@@ -16,19 +16,12 @@ export async function getStaticPaths() {
     }));
 }
 
-/**
- * 2. 개별 글 렌더링
- */
+/* =========================
+   2. 개별 글 렌더링
+========================= */
 const { post } = Astro.props;
+const { Content } = await render(post);
 
-/* 🔒 render 결과 안전 처리 */
-const rendered = await render(post);
-const rawHtml = typeof rendered.html === 'string' ? rendered.html : '';
-
-/* 🔒 **마크다운 제거 (안전) */
-const cleanHtml = rawHtml.replace(/\*\*(.*?)\*\*/g, '$1');
-
-/* 날짜 안전 처리 */
 const publishedDate = post.data.pubDate
   ? post.data.pubDate.toLocaleDateString()
   : '날짜 미정';
@@ -38,74 +31,26 @@ const publishedDate = post.data.pubDate
   <head>
     <meta charset="utf-8" />
     <title>{post.data.title} | 조용한 세계문학 서재</title>
-
-    <style>
-      body {
-        font-family: serif;
-        background-color: #f9f7f2;
-        color: #1a1a1a;
-        margin: 0;
-        line-height: 1.9;
-      }
-
-      article {
-        max-width: 820px;
-        margin: 80px auto;
-        padding: 50px 40px;
-        background: white;
-        border: 1px solid #eee;
-      }
-
-      h1 {
-        font-size: 2.4rem;
-        font-weight: 500;
-        margin-bottom: 10px;
-        text-align: center;
-      }
-
-      .meta {
-        color: #888;
-        font-size: 0.9rem;
-        margin-bottom: 50px;
-        text-align: center;
-      }
-
-      .content {
-        font-size: 1.05rem;
-      }
-
-      .content :global(p) {
-        margin-bottom: 1.6em;
-        text-align: center;
-      }
-
-      .back-link {
-        display: block;
-        margin: 80px auto 0;
-        text-align: center;
-        text-decoration: none;
-        color: #333;
-        border-bottom: 1px solid #ccc;
-        width: fit-content;
-      }
-
-      .back-link:hover {
-        border-bottom-color: #000;
-      }
-    </style>
   </head>
 
   <body>
-    <article>
-      <h1>{post.data.title}</h1>
-      <div class="meta">작성일 · {publishedDate}</div>
+    <article class="post-article">
+      <header class="post-header">
+        <h1>{post.data.title}</h1>
+        <time>{publishedDate}</time>
+      </header>
 
-      <!-- 🔥 안전한 HTML 출력 -->
-      <div class="content" set:html={cleanHtml} />
+      <!-- ✅ 본문 -->
+      <section class="post-content">
+        <Content />
+      </section>
 
-      <a href="/review" class="back-link">
-        ← 북리뷰 게시판으로 돌아가기
-      </a>
+      <!-- ✅ 하단 이동 -->
+      <nav class="post-nav">
+        <a href="/review" class="back-link">
+          ← 북리뷰 게시판으로 돌아가기
+        </a>
+      </nav>
     </article>
   </body>
 </html>
