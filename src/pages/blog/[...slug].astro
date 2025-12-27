@@ -1,10 +1,9 @@
 ---
 import { getCollection, render } from 'astro:content';
 import "../../styles/blog.css";
+
 /**
  * 1. 정적 경로 생성
- * - draft 글 제외
- * - slug는 post.slug 기준
  */
 export async function getStaticPaths() {
   const posts = await getCollection('blog');
@@ -21,9 +20,14 @@ export async function getStaticPaths() {
  * 2. 개별 글 렌더링
  */
 const { post } = Astro.props;
-const { Content } = await render(post);
 
-// 날짜 안전 처리
+/* 🔥 핵심: html 문자열 직접 사용 */
+const { html } = await render(post);
+
+/* 🔥 마크다운 ** 제거 */
+const cleanHtml = html.replace(/\*\*(.*?)\*\*/g, '$1');
+
+/* 날짜 안전 처리 */
 const publishedDate = post.data.pubDate
   ? post.data.pubDate.toLocaleDateString()
   : '날짜 미정';
@@ -55,12 +59,14 @@ const publishedDate = post.data.pubDate
         font-size: 2.4rem;
         font-weight: 500;
         margin-bottom: 10px;
+        text-align: center;
       }
 
       .meta {
         color: #888;
         font-size: 0.9rem;
         margin-bottom: 50px;
+        text-align: center;
       }
 
       .content {
@@ -69,6 +75,7 @@ const publishedDate = post.data.pubDate
 
       .content :global(p) {
         margin-bottom: 1.6em;
+        text-align: center;
       }
 
       .content :global(h2) {
@@ -77,6 +84,7 @@ const publishedDate = post.data.pubDate
         font-size: 1.6rem;
         border-bottom: 1px solid #eee;
         padding-bottom: 10px;
+        text-align: center;
       }
 
       .content :global(blockquote) {
@@ -88,12 +96,14 @@ const publishedDate = post.data.pubDate
       }
 
       .back-link {
-        display: inline-block;
-        margin-top: 80px;
+        display: block;
+        margin: 80px auto 0;
+        text-align: center;
         text-decoration: none;
         color: #333;
         font-weight: 500;
         border-bottom: 1px solid #ccc;
+        width: fit-content;
       }
 
       .back-link:hover {
@@ -107,11 +117,11 @@ const publishedDate = post.data.pubDate
       <h1>{post.data.title}</h1>
       <div class="meta">작성일 · {publishedDate}</div>
 
-      <div class="content">
-        <Content />
-      </div>
+      <!-- 🔥 핵심: 가공된 HTML 출력 -->
+      <div class="content" set:html={cleanHtml} />
 
-      <a href="/review">← 북리뷰 게시판으로 돌아가기</a>
+      <a href="/review" class="back-link">
+        ← 북리뷰 게시판으로 돌아가기
       </a>
     </article>
   </body>
