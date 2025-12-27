@@ -1,0 +1,65 @@
+---
+const { title = '조용한 세계문학 서재' } = Astro.props;
+---
+
+<!DOCTYPE html>
+<html lang="ko">
+  <head>
+    <meta charset="utf-8" />
+    <title>{title}</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+  </head>
+
+  <body>
+    <!-- Header -->
+    <header class="site-header">
+      <a href="/" class="site-title">조용한 세계문학 서재</a>
+    </header>
+
+    <!-- Main -->
+    <main>
+      <slot />
+    </main>
+
+    <!-- Footer -->
+    <footer class="site-footer">
+      <p>© 2025 gedsc · 세계문학 기록실</p>
+      <p>일부 콘텐츠는 AI의 도움을 받아 작성되었습니다.</p>
+    </footer>
+  </body>
+</html>
+
+<style>
+  body {
+    margin: 0;
+    background: #f9f7f2;
+    color: #1a1a1a;
+  }
+
+  .site-header {
+    padding: 28px 40px;
+    border-bottom: 1px solid #eee;
+    background: #fff;
+  }
+
+  .site-title {
+    font-size: 1.3rem;
+    font-weight: 600;
+    text-decoration: none;
+    color: #000;
+  }
+
+  main {
+    padding: 60px 0;
+  }
+
+  .site-footer {
+    margin-top: 120px;
+    padding: 60px 20px;
+    text-align: center;
+    font-size: 0.9rem;
+    color: #777;
+    border-top: 1px solid #eee;
+    background: #fff;
+  }
+</style>
