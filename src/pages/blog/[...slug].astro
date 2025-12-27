@@ -5,23 +5,39 @@ import Comments from '../../components/Comments.astro';
 import PostNavigation from '../../components/PostNavigation.astro';
 import '../../styles/blog.css';
 
-/* 모든 글 */
-const allPosts = (await getCollection('blog'))
-  .filter(p => !p.data.draft)
-  .sort((a, b) => (a.data.pubDate?.getTime() ?? 0) - (b.data.pubDate?.getTime() ?? 0));
-
+/* ✅ 정적 경로 생성 (반드시 내부에서 호출) */
 export async function getStaticPaths() {
-  return allPosts.map(p => ({
-    params: { slug: p.slug },
-    props: { post: p }
+  const posts = (await getCollection('blog'))
+    .filter(p => !p.data.draft)
+    .sort(
+      (a, b) =>
+        (a.data.pubDate?.getTime() ?? 0) -
+        (b.data.pubDate?.getTime() ?? 0)
+    );
+
+  return posts.map(post => ({
+    params: { slug: post.slug },
+    props: { post }
   }));
 }
 
+/* ✅ 여기부터는 페이지 렌더링 영역 */
 const { post } = Astro.props;
+
+/* 전체 글 목록 (이전/다음용) */
+const allPosts = (await getCollection('blog'))
+  .filter(p => !p.data.draft)
+  .sort(
+    (a, b) =>
+      (a.data.pubDate?.getTime() ?? 0) -
+      (b.data.pubDate?.getTime() ?? 0)
+  );
+
 const index = allPosts.findIndex(p => p.slug === post.slug);
 const prev = index > 0 ? allPosts[index - 1] : null;
 const next = index < allPosts.length - 1 ? allPosts[index + 1] : null;
 
+/* 본문 렌더 */
 const rendered = await render(post);
 const Content = rendered.Content;
 const html = typeof rendered.html === 'string' ? rendered.html : '';
