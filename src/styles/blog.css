@@ -80,3 +80,20 @@
 .back-link:hover {
   opacity: 0.7;
 }
+/* ===== 대표 이미지 ===== */
+.post-hero {
+  margin: -60px -40px 80px;
+}
+
+.post-hero img {
+  width: 100%;
+  height: auto;
+  display: block;
+}
+
+/* 모바일 */
+@media (max-width: 768px) {
+  .post-hero {
+    margin: -40px -20px 60px;
+  }
+}
