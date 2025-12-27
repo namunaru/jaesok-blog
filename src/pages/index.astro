@@ -1,5 +1,6 @@
 ---
 import { getCollection } from 'astro:content';
+// 모든 블로그 글을 가져와 날짜 역순으로 정렬합니다.
 const posts = await getCollection('blog');
 posts.sort((a, b) => b.data.pubDate.valueOf() - a.data.pubDate.valueOf());
 ---
@@ -9,46 +10,31 @@ posts.sort((a, b) => b.data.pubDate.valueOf() - a.data.pubDate.valueOf());
     <meta charset="utf-8" />
     <title>조용한 세계문학 서재</title>
     <style>
-      /* 기본 스타일 */
+      /* 전체 배경 및 폰트 설정 */
       body { font-family: 'serif'; background-color: #f9f7f2; color: #1a1a1a; margin: 0; line-height: 1.6; }
       
-      /* 네비게이션: 상단 고정 및 중앙 정렬 */
+      /* 상단 바: 좌우 정렬 */
       nav { display: flex; justify-content: space-between; align-items: center; padding: 20px 50px; background: white; border-bottom: 1px solid #eee; }
       .logo { font-weight: bold; font-size: 1.2rem; }
       .menu a { margin: 0 15px; text-decoration: none; color: #333; font-weight: 500; }
       .icons a { margin-left: 15px; text-decoration: none; font-size: 1.2rem; font-weight: bold; }
       
-      /* 메인 인사말 영역 */
+      /* 메인 인사말: 중앙 정렬 */
       main { max-width: 800px; margin: 80px auto; text-align: center; }
       h1 { font-size: 3rem; margin-bottom: 40px; font-weight: 500; }
       .intro-text { color: #444; margin-bottom: 50px; white-space: pre-line; }
       
-      /* 블로그 섹션: 중앙 정렬 수정 */
-      .blog-section { 
-        text-align: center; 
-        margin-top: 100px; 
-      }
+      /* 블로그 섹션: 전체 틀은 중앙, 글자는 왼쪽 정렬 */
+      .blog-section { text-align: center; margin-top: 100px; }
       .blog-section h2 { font-size: 1.5rem; margin-bottom: 30px; }
+      .blog-section ul { padding: 0; list-style: none; display: inline-block; text-align: left; }
       
-      .blog-section ul { 
-        padding: 0; 
-        list-style: none; 
-        display: inline-block; /* 목록을 중앙으로 모으기 위한 설정 */
-        text-align: left;      /* 목록 내부 글자는 왼쪽 정렬 */
-      }
       .post-item { margin-bottom: 20px; }
       .post-item a { font-size: 1.2rem; color: #000; text-decoration: none; border-bottom: 1px solid #ccc; transition: 0.3s; }
       .post-item a:hover { border-bottom: 1px solid #000; }
       
-      /* 푸터: 중앙 정렬 */
-      footer { 
-        margin-top: 150px; 
-        padding: 50px; 
-        font-size: 0.9rem; 
-        color: #888; 
-        border-top: 1px solid #eee; 
-        text-align: center; 
-      }
+      /* 하단 정보: 중앙 정렬 */
+      footer { margin-top: 150px; padding: 50px; font-size: 0.9rem; color: #888; border-top: 1px solid #eee; text-align: center; }
     </style>
   </head>
   <body>
@@ -61,7 +47,8 @@ posts.sort((a, b) => b.data.pubDate.valueOf() - a.data.pubDate.valueOf());
       </div>
       <div class="icons">
         <a href="https://blog.naver.com/gedsc" target="_blank" title="Naver" style="color: #03C75A;">N</a>
-        <a href="https://www.youtube.com/gedsc" target="_blank" title="YouTube" style="color: #FF0000;">▶</a>
+        {/* 유튜브 핸들(@) 형식을 적용하여 링크 오류를 해결했습니다 */}
+        <a href="https://www.youtube.com/@gedsc" target="_blank" title="YouTube" style="color: #FF0000;">▶</a>
       </div>
     </nav>
 
@@ -81,7 +68,7 @@ posts.sort((a, b) => b.data.pubDate.valueOf() - a.data.pubDate.valueOf());
         <ul>
           {posts.map(post => (
             <li class="post-item">
-              <a href={`/blog/${post.slug}`}>{post.data.title}</a>
+              <a href={`/blog/${post.id}`}>{post.data.title}</a>
               <span style="color:#999; font-size:0.8rem; margin-left:15px;">{post.data.pubDate.toLocaleDateString()}</span>
             </li>
           ))}
