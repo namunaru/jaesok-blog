@@ -22,9 +22,11 @@ const index = allPosts.findIndex(p => p.slug === post.slug);
 const prev = index > 0 ? allPosts[index - 1] : null;
 const next = index < allPosts.length - 1 ? allPosts[index + 1] : null;
 
-const { Content, html } = await render(post);
+const rendered = await render(post);
+const Content = rendered.Content;
+const html = typeof rendered.html === 'string' ? rendered.html : '';
 
-/* 대표 이미지 추출 (첫 img) */
+/* 대표 이미지 (첫 img) */
 const heroMatch = html.match(/<img[^>]+src="([^">]+)"/);
 const heroImage = heroMatch ? heroMatch[1] : null;
 
@@ -54,18 +56,3 @@ const publishedDate = post.data.pubDate?.toLocaleDateString() ?? '';
 
   </article>
 </BaseLayout>
-<script src="https://giscus.app/client.js"
-        data-repo="namunaru/jaesok-blog"
-        data-repo-id="R_kgDOxxxxx"
-        data-category="General"
-        data-category-id="DIC_kwDOxxxxx"
-        data-mapping="pathname"
-        data-strict="0"
-        data-reactions-enabled="1"
-        data-emit-metadata="0"
-        data-input-position="bottom"
-        data-theme="preferred_color_scheme"
-        crossorigin="anonymous"
-        async>
-</script>
-
