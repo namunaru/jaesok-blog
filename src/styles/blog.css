@@ -1,0 +1,38 @@
+/* 블로그 본문 전체 가운데 정렬 */
+article,
+.prose {
+  text-align: center;
+}
+
+/* 문단은 가독성을 위해 다시 가운데 블록 + 중앙 정렬 */
+article p,
+.prose p {
+  margin-left: auto;
+  margin-right: auto;
+  text-align: center;
+}
+
+/* 네이버 이미지 컨테이너 대응 */
+article img,
+.prose img {
+  display: block;
+  margin: 2rem auto;
+  max-width: 100%;
+  height: auto;
+}
+
+/* 네이버 se-image 구조 강제 확장 */
+.se-component,
+.se-image,
+.se-module-image {
+  display: block;
+  margin-left: auto;
+  margin-right: auto;
+  text-align: center;
+}
+
+/* 이미지 너무 작을 때 최소 폭 보정 (선택) */
+.se-module-image img {
+  width: 100%;
+  max-width: 720px;   /* 취향에 따라 640~900 */
+}
