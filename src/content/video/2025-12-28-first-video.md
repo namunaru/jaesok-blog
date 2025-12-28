@@ -1,6 +1,6 @@
 ---
 title: "지독한 순애보인가, 광기인가 [폭풍의 언덕]"
-youtube_id: "j2syNq7Vgjk"
+videoUrl: "https://www.youtube.com/watch?v=j2syNq7Vgjk"
 published_at: 2025-12-28
 ---
 
