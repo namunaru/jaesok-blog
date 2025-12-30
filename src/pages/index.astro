@@ -4,53 +4,70 @@ import BaseLayout from '../layouts/BaseLayout.astro';
 import { getPublishedPosts, mapNotionPageToSchema } from '../lib/notion/posts';
 
 const videoEntries = await getCollection('video');
-const latestVideos = videoEntries.sort((a, b) => (b.data.pubDate?.valueOf() ?? 0) - (a.data.pubDate?.valueOf() ?? 0)).slice(0, 3);
-
-let latestReviews = [];
+const videos = videoEntries.sort((a,b) => (b.data.pubDate?.valueOf() ?? 0) - (a.data.pubDate?.valueOf() ?? 0)).slice(0, 3);
+let reviews = [];
 try {
   const rawPosts = await getPublishedPosts();
-  latestReviews = (rawPosts || []).map(mapNotionPageToSchema).slice(0, 3);
-} catch (e) { console.error(e); }
+  reviews = (rawPosts || []).map(mapNotionPageToSchema).slice(0, 3);
+} catch (e) {}
 ---
 
-<BaseLayout title="홈 | 조용한 세계문학 서재">
-  <section class="hero">
-    <h1 class="serif">안녕하세요, gedsc입니다</h1>
-    <p>이곳은 세계문학을 읽고, 그 내용을 요약하고 해석하며<br/>개인적인 감상과 사유를 기록하는 공간입니다.</p>
+<BaseLayout title="조용한 세계문학 서재">
+  <section class="hero-cyber">
+    <div class="morph-word">
+      <span class="char c1" data-char="G"><span class="char-base">G</span></span>
+      <span class="char c2" data-char="e"><span class="char-base">e</span></span>
+      <span class="char c3" data-char="d"><span class="char-base">d</span></span>
+      <span class="char c4" data-char="s"><span class="char-base">s</span></span>
+      <span class="char c5" data-char="c"><span class="char-base">c</span></span>
+    </div>
+    <div class="footer-line">
+      <div class="fixed-text">입니다</div>
+    </div>
+    <p class="hero-sub">기록하고, 사유하고, 천천히 공유하는 문학의 흔적</p>
   </section>
 
-  <div class="archive-container">
-    <section class="list-section">
+  <main class="container">
+    <section class="archive">
       <h2 class="serif">최근 기록 · 글</h2>
       <div class="post-list">
-        {latestReviews.length > 0 ? latestReviews.map(post => (
-          <a href={`/review/${post.id}`} class="post-item">
-            <span class="title">{post.title}</span>
-            <span class="date">{post.pubDate.toLocaleDateString('en-US')}</span>
-          </a>
-        )) : <p class="empty">기록된 글이 없습니다. (배포 후 확인)</p>}
-      </div>
-    </section>
-
-    <section class="list-section">
-      <h2 class="serif">최근 기록 · 영상</h2>
-      <div class="post-list">
-        {latestVideos.map(v => (
-          <a href={`/video/${v.id.replace('.md', '')}`} class="post-item">
-            <span class="title">▶ {v.data.title}</span>
-            <span class="date">{v.data.pubDate?.toLocaleDateString('en-US')}</span>
+        {reviews.map(p => (
+          <a href={`/review/${p.id}`} class="post-item">
+            <span class="title">{p.title}</span>
+            <span class="date">{p.pubDate.toLocaleDateString('en-US')}</span>
           </a>
         ))}
       </div>
     </section>
-  </div>
+  </main>
 </BaseLayout>
 
 <style>
-  .hero { text-align: center; padding: 100px 20px; }
-  .archive-container { max-width: 720px; margin: 0 auto; padding-bottom: 100px; }
-  .list-section { margin-top: 60px; }
-  .list-section h2 { text-align: center; font-size: 1.4rem; margin-bottom: 30px; }
-  .post-item { display: flex; justify-content: space-between; padding: 18px 0; border-bottom: 1px solid rgba(0,0,0,0.05); text-decoration: none; color: inherit; }
+  .hero-cyber { padding: 120px 0 80px; text-align: center; }
+  .morph-word { display: flex; justify-content: center; margin-bottom: 20px; }
+  .char {
+    position: relative; font-size: 6rem; color: #1a1a1a; font-weight: 900;
+    margin: 0 5px; perspective: 500px; text-transform: uppercase;
+  }
+  .char::before {
+    content: attr(data-char); position: absolute; top: 0; left: 0; width: 100%;
+    color: #c19a6b; z-index: -1; text-shadow: 0 0 15px #d4b483;
+    animation: morph-gold-layer 4s infinite ease-in-out;
+  }
+  .char-base { display: inline-block; animation: base-stabilize 4s infinite ease-in-out; }
+  
+  /* 딜레이 설정 */
+  .c1 .char-base, .c1::before { animation-delay: 0s; }
+  .c2 .char-base, .c2::before { animation-delay: 0.1s; }
+  .c3 .char-base, .c3::before { animation-delay: 0.2s; }
+  .c4 .char-base, .c4::before { animation-delay: 0.3s; }
+  .c5 .char-base, .c5::before { animation-delay: 0.4s; }
+
+  .footer-line { border-top: 2px solid #c19a6b; padding-top: 15px; display: inline-block; min-width: 300px; }
+  .fixed-text { font-size: 1.8rem; color: #c19a6b; letter-spacing: 10px; animation: flicker 2s infinite; }
+  .hero-sub { margin-top: 40px; color: #888; font-size: 1rem; }
+
+  .archive { max-width: 720px; margin: 0 auto; }
+  .post-item { display: flex; justify-content: space-between; padding: 20px 0; border-bottom: 1px solid rgba(0,0,0,0.05); text-decoration: none; color: inherit; }
   .date { color: #ccc; font-size: 0.85rem; }
 </style>

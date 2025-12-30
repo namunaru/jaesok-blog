@@ -1,28 +1,38 @@
 @import url('https://fonts.googleapis.com/css2?family=Noto+Serif+KR:wght@400;700&display=swap');
 
 :root {
-  --bg-color: #F9F7F2;
-  --text-main: #1a1a1a;
-  --accent: #8C7851;
+  --bg-color: #F9F7F2;      /* 서재 크림톤 유지 */
+  --accent-gold: #c19a6b;   /* 모핑 텍스트에 사용할 골드 포인트 */
+  --text-dark: #1a1a1a;
   --font-serif: 'Noto Serif KR', serif;
+}
+
+/* --- 사용자 정의 애니메이션 --- */
+@keyframes float {
+  0%, 100% { transform: translateY(0px); }
+  50% { transform: translateY(-8px); }
+}
+
+@keyframes morph-gold-layer {
+  0%, 100% { opacity: 0; transform: scale(1.5) rotateX(90deg); clip-path: inset(50% 0 50% 0); }
+  30% { opacity: 1; transform: scale(1.2) rotateX(-20deg) skew(15deg); clip-path: polygon(0 10%, 100% 0, 100% 90%, 0 100%); }
+  50%, 75% { opacity: 1; transform: scale(1) rotateX(0) skew(0); clip-path: inset(0 0 0 0); }
+}
+
+@keyframes base-stabilize {
+  0%, 45% { opacity: 0; transform: scale(0.9); filter: blur(10px); }
+  55%, 75% { opacity: 1; transform: scale(1); filter: blur(0px); text-shadow: 0 0 20px rgba(193,154,107,0.4); }
+  85%, 100% { opacity: 0; transform: scale(1.1); filter: blur(5px); }
+}
+
+@keyframes flicker {
+  0%, 19%, 21%, 62%, 64%, 66%, 70%, 100% { opacity: 1; }
+  20%, 63%, 65%, 69% { opacity: 0.4; }
 }
 
 body {
   background-color: var(--bg-color);
-  color: var(--text-main);
   font-family: var(--font-serif);
   margin: 0;
-  line-height: 1.8;
-  word-break: keep-all;
+  overflow-x: hidden;
 }
-
-.serif { font-family: var(--font-serif); }
-
-.container {
-  max-width: 1000px;
-  margin: 0 auto;
-  padding: 0 20px;
-}
-
-a { text-decoration: none; color: inherit; transition: opacity 0.2s; }
-a:hover { opacity: 0.6; }

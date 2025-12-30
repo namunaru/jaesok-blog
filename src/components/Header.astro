@@ -1,5 +1,5 @@
 <header class="site-header">
-    <div class="container header-inner">
+    <div class="header-container">
       <a href="/" class="logo serif">조용한 세계문학 서재</a>
       
       <nav class="nav-links">
@@ -8,20 +8,42 @@
         <a href="/video">영상리뷰</a>
       </nav>
   
-      <div class="social-icons">
-        <a href="https://blog.naver.com/gedsc" target="_blank" class="naver" title="네이버 블로그">N</a>
-        <a href="https://www.youtube.com/@gedsc" target="_blank" class="youtube" title="유튜브">▶</a>
+      <div class="gold-icon-container">
+        <a href="https://blog.naver.com/gedsc" target="_blank" class="sophisticated-gold">
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="none">
+            <path class="icon-path" d="M16.273 12.845L7.376 0H0V24H7.726V11.155L16.624 24H24V0H16.273V12.845Z" fill="#5d4632"/>
+          </svg>
+        </a>
+        
+        <a href="https://www.youtube.com/@gedsc" target="_blank" class="sophisticated-gold youtube-gold">
+          <svg width="24" height="18" viewBox="0 0 28 20" fill="none">
+            <path class="icon-path" d="M27.312 3.123c-.324-1.213-1.275-2.164-2.487-2.488C22.618 0 13.96 0 13.96 0S5.302 0 3.095.635c-1.212.324-2.163 1.275-2.487 2.488C0 5.33 0 10 0 10s0 4.67.608 7.123c.324 1.213 1.275 2.164 2.487 2.488C5.302 20 13.96 20 13.96 20s8.658 0 10.865-.635c1.212-.324 2.163-1.275 2.487-2.488C28 14.67 28 10 28 10s0-4.67-.688-6.877z" fill="#5d4632"/>
+            <path fill="#fff" d="M11.17 14.286l7.283-4.286-7.283-4.286v8.572z" />
+          </svg>
+        </a>
       </div>
     </div>
   </header>
   
   <style>
-    .site-header { padding: 40px 0; border-bottom: 1px solid rgba(0,0,0,0.05); }
-    .header-inner { display: flex; justify-content: space-between; align-items: center; }
-    .logo { font-size: 1.4rem; font-weight: 700; color: #1a1a1a; }
-    .nav-links { display: flex; gap: 35px; }
-    .nav-links a { font-size: 1rem; color: #555; }
-    .social-icons { display: flex; gap: 20px; align-items: center; }
-    .naver { color: #03C75A; font-weight: 900; font-family: sans-serif; font-size: 1.2rem; }
-    .youtube { color: #FF0000; font-size: 1.4rem; }
+    .site-header { padding: 30px 0; background: #F9F7F2; border-bottom: 1px solid rgba(0,0,0,0.05); }
+    .header-container { max-width: 1000px; margin: 0 auto; display: flex; justify-content: space-between; align-items: center; padding: 0 20px; }
+    .logo { font-size: 1.3rem; font-weight: 700; color: #1a1a1a; text-decoration: none; }
+    .nav-links { display: flex; gap: 30px; }
+    .nav-links a { text-decoration: none; color: #555; font-size: 0.95rem; }
+  
+    /* 사용자 정의 골드 아이콘 스타일 */
+    .gold-icon-container { display: flex; gap: 15px; align-items: center; }
+    .sophisticated-gold {
+      display: flex; justify-content: center; align-items: center;
+      width: 42px; height: 42px; border-radius: 50%;
+      background: linear-gradient(135deg, #f5e9d4 0%, #d4b483 25%, #c19a6b 50%, #d4b483 75%, #f5e9d4 100%);
+      background-size: 400% 400%;
+      border: 0.5px solid rgba(255, 255, 255, 0.4);
+      box-shadow: 0 4px 12px rgba(193, 154, 107, 0.2);
+      animation: float 3s ease-in-out infinite;
+      transition: all 0.4s;
+    }
+    .sophisticated-gold:hover { transform: scale(1.1); animation-play-state: paused; }
+    .youtube-gold { animation-delay: 0.5s; }
   </style>
