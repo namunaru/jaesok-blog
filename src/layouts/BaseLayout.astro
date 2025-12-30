@@ -1,18 +1,33 @@
 ---
+import Header from '../components/Header.astro';
+import Footer from '../components/Footer.astro';
 import '../styles/blog.css';
-const { title = "jaesok-blog" } = Astro.props;
+
+const { title } = Astro.props;
 ---
 <html lang="ko">
   <head>
     <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width" />
     <title>{title}</title>
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Serif+KR:wght@400;700&display=swap" rel="stylesheet">
   </head>
   <body>
-    <nav>
-      <a href="/">홈</a> | <a href="/video">영상</a> | <a href="/review">리뷰</a>
-    </nav>
-    <main>
-      <slot /> 
-    </main>
+    <Header />
+    <slot /> <Footer />
   </body>
 </html>
+
+<style is:global>
+  :root {
+    --bg-color: #F9F7F2; /* 크림톤 배경 */
+    --font-serif: 'Noto Serif KR', serif;
+  }
+  body {
+    background-color: var(--bg-color);
+    margin: 0;
+    font-family: var(--font-serif);
+    color: #333;
+    line-height: 1.8;
+  }
+</style>

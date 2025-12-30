@@ -1,51 +1,38 @@
 ---
 import { getEntry, render } from 'astro:content';
 import BaseLayout from '../../layouts/BaseLayout.astro';
-import PostNavigation from '../../components/PostNavigation.astro';
 
 const { slug } = Astro.params;
+const video = await getEntry('video', slug);
 
-// 1. 해당 slug와 일치하는 영상 데이터 가져오기
-const video = await getEntry('video', slug as any);
-
-// 2. 데이터가 없으면 404 페이지로 보냄 (에러 방지)
-if (!video) {
-  return Astro.redirect('/404');
-}
-
-// 3. 마크다운 본문 렌더링
+if (!video) return Astro.redirect('/404');
 const { Content } = await render(video);
 ---
 
-<BaseLayout title={`${video.data.title} | jaesok-blog`}>
-  <article class="video-post">
+<BaseLayout title={`${video.data.title} | 영상리뷰`}>
+  <article class="reading-room">
     <header>
+      <div class="category">영상리뷰</div>
+      <h1 class="serif">{video.data.title}</h1>
       <time>{video.data.pubDate?.toLocaleDateString('ko-KR')}</time>
-      <h1>{video.data.title}</h1>
     </header>
 
-    <div class="video-container">
-      <iframe 
-        src={`https://www.youtube.com/embed/${video.data.youtube.split('v=')[1]}`}
-        frameborder="0" 
-        allowfullscreen
-      ></iframe>
+    <div class="video-wrapper">
+      <iframe src={`https://www.youtube.com/embed/${video.data.youtube.split('v=')[1]}`} frameborder="0" allowfullscreen></iframe>
     </div>
 
-    <div class="prose">
+    <div class="prose serif">
       <Content />
     </div>
-
-    <PostNavigation />
   </article>
 </BaseLayout>
 
 <style>
-  .video-post { max-width: 800px; margin: 0 auto; padding: 40px 20px; }
-  header { text-align: center; margin-bottom: 40px; }
-  header time { color: #888; }
-  header h1 { font-size: 2.5rem; margin-top: 10px; }
-  .video-container { position: relative; padding-bottom: 56.25%; height: 0; margin-bottom: 40px; }
-  .video-container iframe { position: absolute; top: 0; left: 0; width: 100%; height: 100%; border-radius: 12px; }
-  .prose { line-height: 1.8; font-size: 1.1rem; }
+  .reading-room { max-width: 800px; margin: 0 auto; padding: 80px 20px; text-align: center; }
+  .category { color: #8C7851; font-size: 0.9rem; margin-bottom: 1rem; }
+  header h1 { font-size: 2.2rem; margin-bottom: 1rem; }
+  header time { color: #999; font-size: 0.9rem; }
+  .video-wrapper { position: relative; padding-bottom: 56.25%; height: 0; margin: 40px 0; }
+  .video-wrapper iframe { position: absolute; top: 0; left: 0; width: 100%; height: 100%; border-radius: 8px; }
+  .prose { text-align: left; font-size: 1.15rem; line-height: 2; margin-top: 40px; }
 </style>
