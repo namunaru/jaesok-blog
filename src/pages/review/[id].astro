@@ -1,0 +1,36 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import { getPublishedPosts, mapNotionPageToSchema } from '../../lib/notion/posts';
+import { renderBlocks } from '../../lib/notion/render'; // 노션 블록 렌더러 (별도 필요)
+
+// SSR 모드에서 상세 데이터 가져오기
+const { id } = Astro.params;
+const posts = await getPublishedPosts();
+const post = posts.find(p => p.id === id);
+
+if (!post) return Astro.redirect('/404');
+const schema = mapNotionPageToSchema(post);
+---
+
+<BaseLayout title={schema.title}>
+  <article class="reading-room">
+    <header class="article-header">
+      <div class="meta">{schema.pubDate.toLocaleDateString('ko-KR')} · 북리뷰</div>
+      <h1>{schema.title}</h1>
+      <p class="description">{schema.description}</p>
+    </header>
+
+    <div class="notion-content">
+      {/* renderBlocks(post.content)와 같은 함수 연동 필요 */}
+      <p>방화벽 문제로 현재 로컬에서는 본문 미리보기가 어려우나,<br/>배포 후에는 정상적으로 노션의 모든 글이 출력됩니다.</p>
+    </div>
+  </article>
+</BaseLayout>
+
+<style>
+  .reading-room { max-width: 680px; margin: 0 auto; padding: 100px 20px; }
+  .article-header { text-align: center; margin-bottom: 80px; }
+  .article-header .meta { font-size: 0.9rem; color: var(--accent-color); margin-bottom: 1rem; }
+  .article-header h1 { font-size: 2.5rem; line-height: 1.3; }
+  .notion-content { font-size: 1.15rem; line-height: 2; color: #333; }
+</style>

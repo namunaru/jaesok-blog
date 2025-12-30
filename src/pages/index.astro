@@ -1,224 +1,155 @@
 ---
-import "../styles/blog.css";
-
-import {
-  getPublishedPosts,
-} from '../lib/notion';
-
-/* =========================
-   Book Review (최근 3개, Notion)
-========================= */
-const blogPosts = (await getPublishedPosts())
-  .sort((a, b) => {
-    const aTime = a.date ? new Date(a.date).getTime() : 0;
-    const bTime = b.date ? new Date(b.date).getTime() : 0;
-    return bTime - aTime;
-  })
-  .slice(0, 3);
-
-/* =========================
-   Video (기존 유지)
-========================= */
 import { getCollection } from 'astro:content';
+import BaseLayout from '../layouts/BaseLayout.astro';
+// 경로 인식 오류를 방지하기 위해 파일 경로를 직접 지정합니다.
+import { getPublishedPosts, mapNotionPageToSchema } from '../lib/notion/posts';
 
-const videoPosts = (await getCollection('video'))
-  .filter(post => !post.data.draft)
+// 1. 로컬 영상 데이터 가져오기 및 날짜순 정렬
+const videoEntries = await getCollection('video');
+const latestVideos = videoEntries
   .sort((a, b) => {
-    const aTime = a.data.pubDate?.getTime() ?? 0;
-    const bTime = b.data.pubDate?.getTime() ?? 0;
-    return bTime - aTime;
+    // 날짜 데이터가 없을 경우를 대비한 안전 로직입니다.
+    const dateA = a.data.pubDate?.valueOf() ?? 0;
+    const dateB = b.data.pubDate?.valueOf() ?? 0;
+    return dateB - dateA;
   })
-  .slice(0, 3);
+  .slice(0, 5); // 최근 5개만 표시
+
+// 2. 노션 데이터 가져오기 (배포 후 방화벽 없는 환경에서 정상 작동)
+let latestReviews = [];
+try {
+  const rawPosts = await getPublishedPosts();
+  latestReviews = (rawPosts || []).map(mapNotionPageToSchema).slice(0, 5);
+} catch (error) {
+  console.error("노션 데이터를 불러오는 중 오류 발생:", error);
+}
 ---
 
-<html lang="ko">
-  <head>
-    <meta charset="utf-8" />
-    <title>조용한 세계문학 서재</title>
+<BaseLayout title="gedsc | 조용한 세계문학 서재">
+  <header class="hero-section">
+    <h1 class="serif">안녕하세요, gedsc입니다</h1>
+    <p class="hero-desc">
+      이곳은 세계문학을 읽고,<br/>
+      그 내용을 요약하고 해석하며<br/>
+      개인적인 감상과 사유를 기록하는 공간입니다.
+    </p>
+  </header>
 
-    <style>
-      body {
-        font-family: 'serif';
-        background-color: #f9f7f2;
-        color: #1a1a1a;
-        margin: 0;
-        line-height: 1.6;
-      }
-
-      nav {
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-        padding: 20px 50px;
-        background: white;
-        border-bottom: 1px solid #eee;
-      }
-
-      .logo a {
-        font-weight: bold;
-        font-size: 1.2rem;
-        color: #1a1a1a;
-        text-decoration: none;
-      }
-
-      .menu a {
-        margin: 0 15px;
-        text-decoration: none;
-        color: #333;
-        font-weight: 500;
-      }
-
-      .icons a {
-        margin-left: 15px;
-        text-decoration: none;
-        font-size: 1.2rem;
-        font-weight: bold;
-      }
-
-      main {
-        max-width: 800px;
-        margin: 80px auto;
-        text-align: center;
-      }
-
-      h1 {
-        font-size: 3rem;
-        margin-bottom: 40px;
-        font-weight: 500;
-      }
-
-      .intro-text {
-        color: #444;
-        margin-bottom: 60px;
-        white-space: pre-line;
-      }
-
-      section {
-        margin-top: 100px;
-      }
-
-      h2 {
-        font-size: 1.5rem;
-        margin-bottom: 30px;
-      }
-
-      ul {
-        padding: 0;
-        list-style: none;
-        display: inline-block;
-        text-align: left;
-      }
-
-      li {
-        margin-bottom: 18px;
-      }
-
-      a.item-link {
-        font-size: 1.15rem;
-        color: #000;
-        text-decoration: none;
-        border-bottom: 1px solid #ccc;
-        transition: 0.3s;
-      }
-
-      a.item-link:hover {
-        border-bottom: 1px solid #000;
-      }
-
-      .date {
-        color: #999;
-        font-size: 0.8rem;
-        margin-left: 12px;
-      }
-
-      footer {
-        margin-top: 150px;
-        padding: 50px;
-        font-size: 0.9rem;
-        color: #888;
-        border-top: 1px solid #eee;
-        text-align: center;
-      }
-    </style>
-  </head>
-
-  <body>
-    <nav>
-      <div class="logo">
-        <a href="/">조용한 세계문학 서재</a>
-      </div>
-
-      <div class="menu">
-        <a href="/">홈</a>
-        <a href="/blog">북리뷰</a>
-        <a href="/video">북영상</a>
-      </div>
-
-      <div class="icons">
-        <a href="https://blog.naver.com/gedsc" target="_blank" style="color:#03C75A;">N</a>
-        <a href="https://www.youtube.com/@gedsc" target="_blank" style="color:#FF0000;">▶</a>
-      </div>
-    </nav>
-
-    <main>
-      <h1>안녕하세요, gedsc입니다</h1>
-
-      <p class="intro-text">
-        이곳은 세계문학을 읽고,<br>
-        그 내용을 요약하고 해석하며<br>
-        개인적인 감상과 사유를 기록하는 공간입니다.
-      </p>
-
-      <!-- 북리뷰 (Notion) -->
-      <section>
-        <h2>최근 기록 · 글</h2>
-        {blogPosts.length === 0 ? (
-          <p style="color:#999;">아직 등록된 글이 없습니다.</p>
+  <main class="archive-container">
+    <section class="list-section">
+      <h2 class="serif section-title">최근 기록 · 글</h2>
+      <div class="post-list">
+        {latestReviews.length > 0 ? (
+          latestReviews.map((post) => (
+            <a href={`/review/${post.id}`} class="post-item">
+              <span class="post-title">{post.title}</span>
+              <span class="post-date">{post.pubDate.toLocaleDateString('en-US')}</span>
+            </a>
+          ))
         ) : (
-          <ul>
-            {blogPosts.map(post => (
-              <li>
-                <a class="item-link" href={`/blog/${post.slug}`}>
-                  {post.title}
-                </a>
-                {post.date && (
-                  <span class="date">
-                    {new Date(post.date).toLocaleDateString()}
-                  </span>
-                )}
-              </li>
-            ))}
-          </ul>
+          <p class="empty-msg">기록된 글이 없습니다. (배포 후 노션 연동 확인 필요)</p>
         )}
-      </section>
+      </div>
+    </section>
 
-      <!-- 영상 -->
-      <section>
-        <h2>최근 기록 · 영상</h2>
-        {videoPosts.length === 0 ? (
-          <p style="color:#999;">아직 등록된 영상이 없습니다.</p>
-        ) : (
-          <ul>
-            {videoPosts.map(video => (
-              <li>
-                <a class="item-link" href={`/video/${video.slug}`}>
-                  ▶ {video.data.title}
-                </a>
-                {video.data.pubDate && (
-                  <span class="date">
-                    {video.data.pubDate.toLocaleDateString()}
-                  </span>
-                )}
-              </li>
-            ))}
-          </ul>
-        )}
-      </section>
-    </main>
+    <section class="list-section">
+      <h2 class="serif section-title">최근 기록 · 영상</h2>
+      <div class="post-list">
+        {latestVideos.map((video) => (
+          <a href={`/video/${video.id.replace('.md', '')}`} class="post-item">
+            <span class="post-title">▶ {video.data.title}</span>
+            <span class="post-date">
+              {video.data.pubDate ? video.data.pubDate.toLocaleDateString('en-US') : '12/28/2025'}
+            </span>
+          </a>
+        ))}
+      </div>
+    </section>
+  </main>
+</BaseLayout>
 
-    <footer>
-      <p>© 2025 gedsc · 세계문학 기록실</p>
-      <p>일부 콘텐츠는 AI의 도움을 받아 작성되었습니다.</p>
-    </footer>
-  </body>
-</html>
+<style>
+  /* 폰트 설정: 명조체(Title)와 고딕체(Body)의 조화 */
+  .serif {
+    font-family: 'Noto Serif KR', serif;
+    font-weight: 700;
+  }
+
+  /* 히어로 섹션 디자인 */
+  .hero-section {
+    text-align: center;
+    padding: 100px 20px 80px;
+  }
+  .hero-section h1 {
+    font-size: 2.5rem;
+    margin-bottom: 30px;
+    color: #1a1a1a;
+  }
+  .hero-desc {
+    font-size: 1.1rem;
+    line-height: 2;
+    color: #666;
+    font-weight: 400;
+  }
+
+  /* 리스트 컨테이너 */
+  .archive-container {
+    max-width: 720px;
+    margin: 0 auto;
+    padding: 0 20px 100px;
+  }
+  .list-section {
+    margin-top: 80px;
+  }
+  .section-title {
+    font-size: 1.4rem;
+    text-align: center;
+    margin-bottom: 40px;
+    color: #333;
+  }
+
+  /* 개별 리스트 아이템 디자인 */
+  .post-list {
+    display: flex;
+    flex-direction: column;
+  }
+  .post-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+    padding: 20px 0;
+    border-bottom: 1px solid rgba(0, 0, 0, 0.06);
+    text-decoration: none;
+    color: inherit;
+    transition: opacity 0.2s ease;
+  }
+  .post-item:hover {
+    opacity: 0.6;
+  }
+  .post-title {
+    font-size: 1.05rem;
+    color: #2c2c2c;
+    flex: 1;
+    margin-right: 20px;
+    line-height: 1.5;
+  }
+  .post-date {
+    font-size: 0.85rem;
+    color: #bbb;
+    font-family: sans-serif; /* 날짜는 깔끔한 고딕 계열 */
+  }
+
+  .empty-msg {
+    text-align: center;
+    color: #999;
+    padding: 40px 0;
+    font-size: 0.9rem;
+  }
+
+  /* 모바일 대응 */
+  @media (max-width: 640px) {
+    .hero-section h1 { font-size: 2rem; }
+    .post-item { flex-direction: column; gap: 8px; }
+    .post-date { margin-left: 0; }
+  }
+</style>

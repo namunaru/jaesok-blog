@@ -1,39 +1,11 @@
 ---
 const { prev, next } = Astro.props;
 ---
-
-<nav class="post-pagination">
+<nav class="post-pagination" style="display: flex; justify-content: space-between; margin-top: 50px;">
   {prev && (
-    <a class="prev" href={`/blog/${prev.slug}`}>
-      ← {prev.data.title}
-    </a>
+    <a href={`/video/${prev.id}`}>← {prev.data.title}</a>
   )}
-
   {next && (
-    <a class="next" href={`/blog/${next.slug}`}>
-      {next.data.title} →
-    </a>
+    <a href={`/video/${next.id}`}>{next.data.title} →</a>
   )}
 </nav>
-
-<style>
-.post-pagination {
-  display: flex;
-  justify-content: space-between;
-  gap: 30px;
-  margin-top: 120px;
-  font-size: 0.95rem;
-}
-
-.post-pagination a {
-  max-width: 45%;
-  color: #333;
-  text-decoration: none;
-  border-bottom: 1px solid #bbb;
-  line-height: 1.4;
-}
-
-.post-pagination a:hover {
-  opacity: 0.7;
-}
-</style>

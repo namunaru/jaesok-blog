@@ -1,83 +1,38 @@
-import { notion, DATABASE_ID } from './client';
+import { Client } from '@notionhq/client';
 
-export interface NotionPost {
-  pageId: string;
-  title: string;
-  slug: string;
-  date: string;
-  cover?: string | null;
+// 1. 여기서 직접 클라이언트를 생성합니다.
+export const notion = new Client({
+  auth: import.meta.env.NOTION_TOKEN,
+});
+
+export const DATABASE_ID = import.meta.env.NOTION_DATABASE_ID;
+
+// 2. 데이터 가져오기 함수
+export async function getPublishedPosts() {
+  if (!DATABASE_ID) return [];
+  try {
+    const response = await notion.databases.query({
+      database_id: DATABASE_ID,
+      filter: { property: 'Status', status: { equals: 'Published' } },
+      sorts: [{ property: 'Date', direction: 'descending' }],
+    });
+    return response.results;
+  } catch (e) {
+    console.error("노션 데이터를 불러오는 중 에러 발생:", e);
+    return [];
+  }
 }
 
-/* =========================
-   Published posts 목록
-========================= */
-export async function getPublishedPosts(): Promise<NotionPost[]> {
-  const res = await notion.databases.query({
-    database_id: DATABASE_ID,
-    filter: {
-      and: [
-        {
-          property: 'status',
-          select: { equals: 'published' },
-        },
-        {
-          property: 'category',
-          select: { equals: '북리뷰' },
-        },
-      ],
-    },
-    sorts: [
-      {
-        property: 'date',
-        direction: 'descending',
-      },
-    ],
-  });
-
-  return res.results.map(mapPageToPost);
-}
-
-/* =========================
-   slug로 단일 글 조회
-========================= */
-export async function getPostBySlug(
-  slug: string
-): Promise<NotionPost | null> {
-  const res = await notion.databases.query({
-    database_id: DATABASE_ID,
-    filter: {
-      and: [
-        {
-          property: 'slug',
-          rich_text: { equals: slug },
-        },
-        {
-          property: 'status',
-          select: { equals: 'published' },
-        },
-      ],
-    },
-    page_size: 1,
-  });
-
-  if (res.results.length === 0) return null;
-  return mapPageToPost(res.results[0]);
-}
-
-/* =========================
-   내부 매핑
-========================= */
-function mapPageToPost(page: any): NotionPost {
-  const props = page.properties;
-
+// 3. 데이터 매핑 함수 (날짜 에러 방지 포함)
+export function mapNotionPageToSchema(page: any) {
+  const p = page.properties;
+  const rawDate = p.Date?.date?.start || page.created_time;
+  
   return {
-    pageId: page.id,
-    title: props.title.title[0]?.plain_text ?? '',
-    slug: props.slug.rich_text[0]?.plain_text ?? '',
-    date: props.date.date?.start ?? '',
-    cover: page.cover?.external?.url
-      ?? page.cover?.file?.url
-      ?? null,
+    id: page.id,
+    title: p.Title?.title[0]?.plain_text || '제목 없음',
+    pubDate: new Date(rawDate),
+    youtube: p.YouTube?.url || '',
+    description: p.Description?.rich_text[0]?.plain_text || '',
   };
 }
-

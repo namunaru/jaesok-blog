@@ -1,104 +1,18 @@
 ---
-const { title = '조용한 세계문학 서재' } = Astro.props;
+import '../styles/blog.css';
+const { title = "jaesok-blog" } = Astro.props;
 ---
-
-<!DOCTYPE html>
 <html lang="ko">
   <head>
     <meta charset="utf-8" />
     <title>{title}</title>
-    <meta name="viewport" content="width=device-width, initial-scale=1" />
   </head>
-
   <body>
-    <!-- Header -->
-    <header class="site-header">
-      <div class="header-inner">
-        <a href="/" class="site-title">조용한 세계문학 서재</a>
-        <nav class="site-nav">
-          <a href="/">홈</a>
-          <a href="/blog">북리뷰</a>
-          <a href="/video">북영상</a>
-        </nav>
-      </div>
-    </header>
-
-    <!-- Main -->
-    <main class="site-main">
-      <article class="content-container">
-        <slot />
-      </article>
+    <nav>
+      <a href="/">홈</a> | <a href="/video">영상</a> | <a href="/review">리뷰</a>
+    </nav>
+    <main>
+      <slot /> 
     </main>
-
-    <!-- Footer -->
-    <footer class="site-footer">
-      <p>© 2025 gedsc · 세계문학 기록실</p>
-      <p>일부 콘텐츠는 AI의 도움을 받아 작성되었습니다.</p>
-    </footer>
   </body>
 </html>
-
-<style>
-  body {
-    margin: 0;
-    background: #f9f7f2;
-    color: #1a1a1a;
-    font-family: serif;
-    line-height: 1.65;
-  }
-
-  /* Header */
-  .site-header {
-    background: #fff;
-    border-bottom: 1px solid #eee;
-  }
-
-  .header-inner {
-    max-width: 1000px;
-    margin: 0 auto;
-    padding: 28px 40px;
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-  }
-
-  .site-title {
-    font-size: 1.3rem;
-    font-weight: 600;
-    text-decoration: none;
-    color: #000;
-  }
-
-  .site-nav a {
-    margin-left: 24px;
-    text-decoration: none;
-    font-size: 0.95rem;
-    color: #333;
-  }
-
-  .site-nav a:hover {
-    text-decoration: underline;
-  }
-
-  /* Main */
-  .site-main {
-    padding: 80px 0;
-  }
-
-  .content-container {
-    max-width: 760px;
-    margin: 0 auto;
-    padding: 0 20px;
-  }
-
-  /* Footer */
-  .site-footer {
-    margin-top: 140px;
-    padding: 60px 20px;
-    text-align: center;
-    font-size: 0.9rem;
-    color: #777;
-    border-top: 1px solid #eee;
-    background: #fff;
-  }
-</style>
