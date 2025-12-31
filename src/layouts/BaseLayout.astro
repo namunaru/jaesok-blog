@@ -1,33 +1,30 @@
 ---
 import Header from '../components/Header.astro';
 import Footer from '../components/Footer.astro';
-import '../styles/blog.css';
+import '../styles/blog.css'; // 글로벌 스타일 불러오기
 
-const { title } = Astro.props;
+interface Props {
+  title: string;
+  description?: string;
+}
+
+const { title, description = "조용한 세계문학 서재" } = Astro.props;
 ---
+
+<!DOCTYPE html>
 <html lang="ko">
   <head>
-    <meta charset="utf-8" />
+    <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width" />
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <meta name="generator" content={Astro.generator} />
+    <meta name="description" content={description} />
     <title>{title}</title>
-    <link href="https://fonts.googleapis.com/css2?family=Noto+Serif+KR:wght@400;700&display=swap" rel="stylesheet">
   </head>
   <body>
     <Header />
-    <slot /> <Footer />
+    <main>
+      <slot /> </main>
+    <Footer />
   </body>
 </html>
-
-<style is:global>
-  :root {
-    --bg-color: #F9F7F2; /* 크림톤 배경 */
-    --font-serif: 'Noto Serif KR', serif;
-  }
-  body {
-    background-color: var(--bg-color);
-    margin: 0;
-    font-family: var(--font-serif);
-    color: #333;
-    line-height: 1.8;
-  }
-</style>

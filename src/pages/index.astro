@@ -12,7 +12,7 @@ try {
 } catch (e) {}
 ---
 
-<BaseLayout title="조용한 세계문학 서재">
+<BaseLayout title="Gedsc | 조용한 세계문학 서재">
   <section class="hero-cyber">
     <div class="morph-word">
       <span class="char c1" data-char="G"><span class="char-base">G</span></span>
@@ -21,10 +21,7 @@ try {
       <span class="char c4" data-char="s"><span class="char-base">s</span></span>
       <span class="char c5" data-char="c"><span class="char-base">c</span></span>
     </div>
-    <div class="footer-line">
-      <div class="fixed-text">입니다</div>
-    </div>
-    <p class="hero-sub">기록하고, 사유하고, 천천히 공유하는 문학의 흔적</p>
+    <p class="hero-sub serif">기록하고, 사유하고, 천천히 공유하는 문학의 흔적</p>
   </section>
 
   <main class="container">
@@ -43,31 +40,40 @@ try {
 </BaseLayout>
 
 <style>
-  .hero-cyber { padding: 120px 0 80px; text-align: center; }
-  .morph-word { display: flex; justify-content: center; margin-bottom: 20px; }
+  .hero-cyber { padding: 150px 0 100px; text-align: center; }
+  .morph-word { display: flex; justify-content: center; margin-bottom: 30px; }
   .char {
-    position: relative; font-size: 6rem; color: #1a1a1a; font-weight: 900;
-    margin: 0 5px; perspective: 500px; text-transform: uppercase;
+    position: relative; font-size: 7.5rem; color: #1a1a1a; font-weight: 900;
+    margin: 0 8px; perspective: 500px; text-transform: none; /* Gedsc 대소문자 유지 */
   }
   .char::before {
     content: attr(data-char); position: absolute; top: 0; left: 0; width: 100%;
-    color: #c19a6b; z-index: -1; text-shadow: 0 0 15px #d4b483;
+    color: #c19a6b; z-index: -1; text-shadow: 0 0 20px #d4b483;
     animation: morph-gold-layer 4s infinite ease-in-out;
   }
   .char-base { display: inline-block; animation: base-stabilize 4s infinite ease-in-out; }
   
-  /* 딜레이 설정 */
   .c1 .char-base, .c1::before { animation-delay: 0s; }
-  .c2 .char-base, .c2::before { animation-delay: 0.1s; }
-  .c3 .char-base, .c3::before { animation-delay: 0.2s; }
-  .c4 .char-base, .c4::before { animation-delay: 0.3s; }
-  .c5 .char-base, .c5::before { animation-delay: 0.4s; }
+  .c2 .char-base, .c2::before { animation-delay: 0.15s; }
+  .c3 .char-base, .c3::before { animation-delay: 0.3s; }
+  .c4 .char-base, .c4::before { animation-delay: 0.45s; }
+  .c5 .char-base, .c5::before { animation-delay: 0.6s; }
 
-  .footer-line { border-top: 2px solid #c19a6b; padding-top: 15px; display: inline-block; min-width: 300px; }
-  .fixed-text { font-size: 1.8rem; color: #c19a6b; letter-spacing: 10px; animation: flicker 2s infinite; }
-  .hero-sub { margin-top: 40px; color: #888; font-size: 1rem; }
+  .hero-sub { margin-top: 50px; color: #777; font-size: 1.1rem; letter-spacing: 0.05em; }
 
-  .archive { max-width: 720px; margin: 0 auto; }
-  .post-item { display: flex; justify-content: space-between; padding: 20px 0; border-bottom: 1px solid rgba(0,0,0,0.05); text-decoration: none; color: inherit; }
-  .date { color: #ccc; font-size: 0.85rem; }
+  .archive { max-width: 720px; margin: 80px auto; }
+  .serif { font-family: 'Noto Serif KR', serif; font-weight: 700; }
+  .post-item { display: flex; justify-content: space-between; padding: 22px 0; border-bottom: 1px solid rgba(0,0,0,0.06); text-decoration: none; color: inherit; }
+  .date { color: #ccc; font-size: 0.9rem; }
+
+  @keyframes morph-gold-layer {
+    0%, 100% { opacity: 0; transform: scale(1.5) rotateX(90deg); clip-path: inset(50% 0 50% 0); }
+    30% { opacity: 1; transform: scale(1.2) rotateX(-20deg) skew(15deg); clip-path: polygon(0 10%, 100% 0, 100% 90%, 0 100%); }
+    50%, 75% { opacity: 1; transform: scale(1) rotateX(0) skew(0); clip-path: inset(0 0 0 0); }
+  }
+  @keyframes base-stabilize {
+    0%, 45% { opacity: 0; transform: scale(0.9); filter: blur(10px); }
+    55%, 75% { opacity: 1; transform: scale(1); filter: blur(0px); text-shadow: 0 0 20px rgba(193,154,107,0.4); }
+    85%, 100% { opacity: 0; transform: scale(1.1); filter: blur(5px); }
+  }
 </style>
