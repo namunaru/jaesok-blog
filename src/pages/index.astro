@@ -2,9 +2,16 @@
 import BaseLayout from '../layouts/BaseLayout.astro';
 import { getCollection } from 'astro:content';
 
-// 폴더 내의 .md 파일들을 가져와 날짜순으로 정렬합니다.
-const posts = await getCollection('review');
-const sortedPosts = posts.sort((a, b) => b.data.pubDate.valueOf() - a.data.pubDate.valueOf());
+// 1. src/content/review 폴더에서 모든 리뷰 글을 가져옵니다.
+const allPosts = await getCollection('review');
+
+// 2. 초안(draft)이 아닌 글들만 골라 최신순(날짜 내림차순)으로 정렬합니다.
+const sortedPosts = allPosts
+  .filter(post => !post.data.draft)
+  .sort((a, b) => b.data.pubDate.valueOf() - a.data.pubDate.valueOf());
+
+// 3. 강조하고 싶은 글(featured)이 있다면 따로 분류할 수 있습니다.
+const featuredPosts = sortedPosts.filter(post => post.data.featured);
 ---
 
 <BaseLayout title="Gedsc">
@@ -14,31 +21,176 @@ const sortedPosts = posts.sort((a, b) => b.data.pubDate.valueOf() - a.data.pubDa
   </section>
 
   <main class="container">
-    <div class="post-grid">
-      {sortedPosts.map((post) => (
-        <article class="post-card">
-          <a href={post.data.link} target="_blank" rel="noopener noreferrer">
-            <div class="thumb-box">
-              <img src={post.data.thumbnail} alt={post.data.title} />
-            </div>
-            <div class="info-box">
-              <h3 class="serif">{post.data.title}</h3>
-              <p>{post.data.description}</p>
-              <span class="date">{post.data.pubDate.toLocaleDateString()}</span>
-            </div>
-          </a>
-        </article>
-      ))}
-    </div>
+    <section class="archive">
+      <h2 class="section-title serif">최근의 기록</h2>
+      
+      <div class="post-list">
+        {sortedPosts.map((post) => (
+          <article class="post-item">
+            <a href={post.data.link} target="_blank" rel="noopener noreferrer" class="post-link">
+              <div class="thumbnail-wrapper">
+                {/* 네이버 이미지 주소 끝에 ?type=w1이 붙어 고해상도로 출력됩니다. */}
+                <img src={post.data.thumbnail} alt={post.data.title} loading="lazy" />
+                {post.data.category && <span class="category-tag">{post.data.category}</span>}
+              </div>
+              
+              <div class="post-info">
+                <h3 class="post-title serif">{post.data.title}</h3>
+                <p class="post-description">{post.data.description}</p>
+                <div class="post-meta">
+                  <span class="date">{post.data.pubDate.toLocaleDateString('ko-KR', { year: 'numeric', month: 'long', day: 'numeric' })}</span>
+                  {post.data.tags && (
+                    <div class="tags">
+                      {post.data.tags.map(tag => <span class="tag">#{tag}</span>)}
+                    </div>
+                  )}
+                </div>
+              </div>
+            </a>
+          </article>
+        ))}
+      </div>
+    </section>
   </main>
+
+  <footer class="site-footer">
+    <p>© 2026 gedsc · 세계문학 기록실</p>
+    <p class="ai-notice">일부 콘텐츠는 AI의 도움을 받아 작성되었습니다.</p>
+  </footer>
 </BaseLayout>
 
 <style>
-  .post-grid { display: grid; gap: 3rem; padding: 2rem 0; }
-  .post-card a { display: flex; gap: 2rem; text-decoration: none; color: inherit; }
-  .thumb-box { width: 240px; height: 150px; overflow: hidden; border-radius: 4px; }
-  .thumb-box img { width: 100%; height: 100%; object-fit: cover; transition: 0.3s; }
-  .post-card:hover img { transform: scale(1.05); }
-  .info-box h3 { font-size: 1.5rem; margin-bottom: 0.5rem; color: #1a1a1a; }
-  .info-box p { color: #666; font-size: 0.95rem; line-height: 1.6; }
+  /* 레이아웃 컨테이너 */
+  .container {
+    max-width: 900px;
+    margin: 0 auto;
+    padding: 0 20px;
+  }
+
+  /* 히어로 섹션 스타일 */
+  .hero-cyber {
+    padding: 120px 0 80px;
+    text-align: center;
+    background: radial-gradient(circle at center, #fffaf0 0%, #ffffff 100%);
+  }
+  .morph-word {
+    font-size: 5rem;
+    font-weight: 800;
+    letter-spacing: -2px;
+    color: #1a1a1a;
+    margin-bottom: 10px;
+  }
+  .hero-sub {
+    font-size: 1.2rem;
+    color: #b3934d; /* 세련된 골드 포인트 */
+  }
+
+  /* 포스트 리스트 스타일 */
+  .section-title {
+    font-size: 1.8rem;
+    margin-bottom: 40px;
+    border-bottom: 1px solid #eee;
+    padding-bottom: 10px;
+    color: #333;
+  }
+  .post-list {
+    display: flex;
+    flex-direction: column;
+    gap: 60px;
+    margin-bottom: 100px;
+  }
+  .post-item {
+    transition: transform 0.3s ease;
+  }
+  .post-item:hover {
+    transform: translateY(-5px);
+  }
+  .post-link {
+    display: flex;
+    gap: 30px;
+    text-decoration: none;
+    color: inherit;
+  }
+
+  /* 썸네일 처리 */
+  .thumbnail-wrapper {
+    position: relative;
+    flex: 0 0 300px;
+    height: 180px;
+    overflow: hidden;
+    border-radius: 8px;
+    box-shadow: 0 10px 20px rgba(0,0,0,0.05);
+  }
+  .thumbnail-wrapper img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+  .category-tag {
+    position: absolute;
+    top: 10px;
+    left: 10px;
+    background: rgba(179, 147, 77, 0.9);
+    color: white;
+    padding: 4px 10px;
+    font-size: 0.75rem;
+    border-radius: 4px;
+    backdrop-filter: blur(4px);
+  }
+
+  /* 텍스트 정보 영역 */
+  .post-info {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+  }
+  .post-title {
+    font-size: 1.6rem;
+    margin: 0 0 15px 0;
+    line-height: 1.3;
+    color: #1a1a1a;
+  }
+  .post-description {
+    font-size: 1rem;
+    color: #666;
+    line-height: 1.6;
+    margin-bottom: 20px;
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+  }
+  .post-meta {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+    font-size: 0.85rem;
+    color: #999;
+  }
+  .tag {
+    margin-right: 8px;
+    color: #b3934d;
+  }
+
+  /* 푸터 스타일 */
+  .site-footer {
+    padding: 60px 0;
+    text-align: center;
+    border-top: 1px solid #eee;
+    color: #888;
+    font-size: 0.9rem;
+  }
+  .ai-notice {
+    font-size: 0.75rem;
+    margin-top: 10px;
+    opacity: 0.6;
+  }
+
+  /* 모바일 대응 */
+  @media (max-width: 768px) {
+    .post-link { flex-direction: column; gap: 15px; }
+    .thumbnail-wrapper { flex: 0 0 auto; width: 100%; }
+    .morph-word { font-size: 3.5rem; }
+  }
 </style>
