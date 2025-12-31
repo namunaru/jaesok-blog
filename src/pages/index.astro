@@ -1,92 +1,44 @@
 ---
-import { getCollection } from 'astro:content';
 import BaseLayout from '../layouts/BaseLayout.astro';
-import { getPublishedPosts, mapNotionPageToSchema } from '../lib/notion/posts';
+import { getCollection } from 'astro:content';
 
-const videoEntries = await getCollection('video');
-const videos = videoEntries.sort((a,b) => (b.data.pubDate?.valueOf() ?? 0) - (a.data.pubDate?.valueOf() ?? 0)).slice(0, 3);
-
-let reviews = [];
-console.log("HOME PAGE: 노션 데이터 요청 시작...");
-
-try {
-  const rawPosts = await getPublishedPosts();
-  reviews = (rawPosts || [])
-    .map(mapNotionPageToSchema)
-    .filter(post => post !== null); // 변환 에러 난 데이터 제외
-
-  console.log(`HOME PAGE: 최종 표시될 리뷰 개수: ${reviews.length}`);
-} catch (e) {
-  console.error("HOME PAGE ERROR:", e);
-}
+// 폴더 내의 .md 파일들을 가져와 날짜순으로 정렬합니다.
+const posts = await getCollection('review');
+const sortedPosts = posts.sort((a, b) => b.data.pubDate.valueOf() - a.data.pubDate.valueOf());
 ---
 
 <BaseLayout title="Gedsc">
   <section class="hero-cyber">
-    <div class="morph-word">
-      <span class="char c1" data-char="G"><span class="char-base">G</span></span>
-      <span class="char c2" data-char="e"><span class="char-base">e</span></span>
-      <span class="char c3" data-char="d"><span class="char-base">d</span></span>
-      <span class="char c4" data-char="s"><span class="char-base">s</span></span>
-      <span class="char c5" data-char="c"><span class="char-base">c</span></span>
-    </div>
+    <div class="morph-word">Gedsc</div>
     <p class="hero-sub serif">기록하고, 사유하고, 천천히 공유하는 문학의 흔적</p>
   </section>
 
-  <main class="container archive-container">
-    <section class="archive-section">
-      <h2 class="serif section-title">최근 기록 · 글</h2>
-      <div class="post-list">
-        {reviews.length > 0 ? (
-          reviews.map((p) => (
-            <a href={`/review/${p.id}`} class="post-item">
-              <span class="title">{p.title}</span>
-              <span class="date">{p.pubDate.toLocaleDateString('en-US')}</span>
-            </a>
-          ))
-        ) : (
-          <p class="empty-msg">기록을 불러오는 중입니다... (Cloudflare 실시간 로그를 확인하세요)</p>
-        )}
-      </div>
-      <div class="more-btn-container">
-        <a href="/review" class="more-link gold-btn">북리뷰 전체보기</a>
-      </div>
-    </section>
-
-    <section class="archive-section">
-      <h2 class="serif section-title">최근 기록 · 영상</h2>
-      <div class="post-list">
-        {videos.map((v) => (
-          <a href={`/video/${v.id.replace('.md', '')}`} class="post-item">
-            <span class="title">▶ {v.data.title}</span>
-            <span class="date">{v.data.pubDate?.toLocaleDateString('en-US')}</span>
+  <main class="container">
+    <div class="post-grid">
+      {sortedPosts.map((post) => (
+        <article class="post-card">
+          <a href={post.data.link} target="_blank" rel="noopener noreferrer">
+            <div class="thumb-box">
+              <img src={post.data.thumbnail} alt={post.data.title} />
+            </div>
+            <div class="info-box">
+              <h3 class="serif">{post.data.title}</h3>
+              <p>{post.data.description}</p>
+              <span class="date">{post.data.pubDate.toLocaleDateString()}</span>
+            </div>
           </a>
-        ))}
-      </div>
-      <div class="more-btn-container">
-        <a href="/video" class="more-link gold-btn">영상리뷰 전체보기</a>
-      </div>
-    </section>
+        </article>
+      ))}
+    </div>
   </main>
 </BaseLayout>
 
 <style>
-  /* 디자인 코드는 기존과 동일하게 유지합니다 */
-  .hero-cyber { padding: 150px 0 80px; text-align: center; }
-  .morph-word { display: flex; justify-content: center; margin-bottom: 30px; }
-  .char { position: relative; font-size: 7.5rem; color: #1a1a1a; font-weight: 900; margin: 0 8px; perspective: 500px; text-transform: none; }
-  .char::before { content: attr(data-char); position: absolute; top: 0; left: 0; width: 100%; color: #c19a6b; animation: morph-gold-layer 4s infinite; }
-  .char-base { display: inline-block; animation: base-stabilize 4s infinite; }
-  .hero-sub { margin-top: 50px; color: #777; font-size: 1.1rem; letter-spacing: 0.05em; }
-  .archive-section { margin-top: 100px; }
-  .section-title { font-size: 1.6rem; text-align: center; margin-bottom: 40px; }
-  .post-list { max-width: 720px; margin: 0 auto; }
-  .post-item { display: flex; justify-content: space-between; padding: 22px 0; border-bottom: 1px solid rgba(0,0,0,0.06); text-decoration: none; color: inherit; }
-  .date { color: #ccc; font-size: 0.9rem; }
-  .more-btn-container { text-align: center; margin-top: 40px; }
-  .more-link { display: inline-block; padding: 12px 30px; border-radius: 30px; font-size: 0.9rem; text-decoration: none; transition: all 0.3s; }
-  .gold-btn { background: linear-gradient(135deg, #f5e9d4 0%, #d4b483 50%, #c19a6b 100%); color: #5d4632; font-weight: 700; }
-  .empty-msg { text-align: center; color: #999; padding: 20px 0; }
-  @keyframes morph-gold-layer { 0%, 100% { opacity: 0; transform: scale(1.5); } 50% { opacity: 1; transform: scale(1); } }
-  @keyframes base-stabilize { 0%, 45% { opacity: 0; } 55%, 75% { opacity: 1; } }
+  .post-grid { display: grid; gap: 3rem; padding: 2rem 0; }
+  .post-card a { display: flex; gap: 2rem; text-decoration: none; color: inherit; }
+  .thumb-box { width: 240px; height: 150px; overflow: hidden; border-radius: 4px; }
+  .thumb-box img { width: 100%; height: 100%; object-fit: cover; transition: 0.3s; }
+  .post-card:hover img { transform: scale(1.05); }
+  .info-box h3 { font-size: 1.5rem; margin-bottom: 0.5rem; color: #1a1a1a; }
+  .info-box p { color: #666; font-size: 0.95rem; line-height: 1.6; }
 </style>
