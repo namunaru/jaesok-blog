@@ -1,0 +1,60 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import { getCollection } from 'astro:content';
+
+// 마크다운 파일들 가져오기
+const posts = await getCollection('review');
+const sortedPosts = posts
+  .filter(post => !post.data.draft)
+  .sort((a, b) => b.data.pubDate.valueOf() - a.data.pubDate.valueOf());
+---
+
+<BaseLayout title="북리뷰 | Gedsc">
+  <section class="page-header">
+    <h1 class="serif">북리뷰</h1>
+    <p class="hero-sub">기록하고, 사유하고, 천천히 공유하는 문학의 흔적</p>
+  </section>
+
+  <main class="container">
+    <div class="post-list">
+      {sortedPosts.length > 0 ? (
+        sortedPosts.map((post) => (
+          <article class="post-item">
+            <a href={post.data.link} target="_blank" rel="noopener noreferrer">
+              <div class="thumbnail-wrapper">
+                <img src={post.data.thumbnail} alt={post.data.title} />
+              </div>
+              <div class="post-info">
+                <h3 class="serif">{post.data.title}</h3>
+                <p class="description">{post.data.description}</p>
+                <span class="date">{post.data.pubDate.toLocaleDateString('ko-KR')}</span>
+              </div>
+            </a>
+          </article>
+        ))
+      ) : (
+        <p class="empty-msg">아직 기록된 리뷰가 없습니다.</p>
+      )}
+    </div>
+  </main>
+</BaseLayout>
+
+<style>
+  .container { max-width: 900px; margin: 0 auto; padding: 60px 20px; }
+  .page-header { text-align: center; padding: 80px 0 40px; }
+  .page-header h1 { font-size: 2.5rem; margin-bottom: 15px; }
+  .hero-sub { color: #b3934d; font-size: 1rem; }
+  
+  .post-list { display: flex; flex-direction: column; gap: 50px; }
+  .post-item a { display: flex; gap: 30px; text-decoration: none; color: inherit; }
+  .thumbnail-wrapper { flex: 0 0 280px; height: 160px; border-radius: 8px; overflow: hidden; }
+  .thumbnail-wrapper img { width: 100%; height: 100%; object-fit: cover; }
+  .post-info h3 { font-size: 1.6rem; margin-bottom: 12px; }
+  .description { color: #666; line-height: 1.7; margin-bottom: 15px; }
+  .empty-msg { text-align: center; color: #999; padding: 100px 0; }
+  
+  @media (max-width: 768px) {
+    .post-item a { flex-direction: column; }
+    .thumbnail-wrapper { width: 100%; }
+  }
+</style>
