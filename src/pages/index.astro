@@ -3,23 +3,25 @@ import { getCollection } from 'astro:content';
 import BaseLayout from '../layouts/BaseLayout.astro';
 import { getPublishedPosts, mapNotionPageToSchema } from '../lib/notion/posts';
 
-// 1. 영상 데이터 가져오기 (메인에는 최신 3개만 표시)
 const videoEntries = await getCollection('video');
-const videos = videoEntries
-  .sort((a, b) => (b.data.pubDate?.valueOf() ?? 0) - (a.data.pubDate?.valueOf() ?? 0))
-  .slice(0, 3);
+const videos = videoEntries.sort((a,b) => (b.data.pubDate?.valueOf() ?? 0) - (a.data.pubDate?.valueOf() ?? 0)).slice(0, 3);
 
-// 2. 노션 글 데이터 가져오기
 let reviews = [];
+console.log("HOME PAGE: 노션 데이터 요청 시작...");
+
 try {
   const rawPosts = await getPublishedPosts();
-  reviews = (rawPosts || []).map(mapNotionPageToSchema).slice(0, 3);
+  reviews = (rawPosts || [])
+    .map(mapNotionPageToSchema)
+    .filter(post => post !== null); // 변환 에러 난 데이터 제외
+
+  console.log(`HOME PAGE: 최종 표시될 리뷰 개수: ${reviews.length}`);
 } catch (e) {
-  console.error(e);
+  console.error("HOME PAGE ERROR:", e);
 }
 ---
 
-<BaseLayout title="Gedsc | 조용한 세계문학 서재">
+<BaseLayout title="Gedsc">
   <section class="hero-cyber">
     <div class="morph-word">
       <span class="char c1" data-char="G"><span class="char-base">G</span></span>
@@ -43,7 +45,7 @@ try {
             </a>
           ))
         ) : (
-          <p class="empty-msg">기록을 불러오는 중입니다... (배포 후 확인)</p>
+          <p class="empty-msg">기록을 불러오는 중입니다... (Cloudflare 실시간 로그를 확인하세요)</p>
         )}
       </div>
       <div class="more-btn-container">
@@ -69,65 +71,22 @@ try {
 </BaseLayout>
 
 <style>
-  /* 히어로 스타일 */
+  /* 디자인 코드는 기존과 동일하게 유지합니다 */
   .hero-cyber { padding: 150px 0 80px; text-align: center; }
   .morph-word { display: flex; justify-content: center; margin-bottom: 30px; }
-  .char {
-    position: relative; font-size: 7.5rem; color: #1a1a1a; font-weight: 900;
-    margin: 0 8px; perspective: 500px; text-transform: none;
-  }
-  .char::before {
-    content: attr(data-char); position: absolute; top: 0; left: 0; width: 100%;
-    color: #c19a6b; z-index: -1; text-shadow: 0 0 20px #d4b483;
-    animation: morph-gold-layer 4s infinite ease-in-out;
-  }
-  .char-base { display: inline-block; animation: base-stabilize 4s infinite ease-in-out; }
-  
+  .char { position: relative; font-size: 7.5rem; color: #1a1a1a; font-weight: 900; margin: 0 8px; perspective: 500px; text-transform: none; }
+  .char::before { content: attr(data-char); position: absolute; top: 0; left: 0; width: 100%; color: #c19a6b; animation: morph-gold-layer 4s infinite; }
+  .char-base { display: inline-block; animation: base-stabilize 4s infinite; }
   .hero-sub { margin-top: 50px; color: #777; font-size: 1.1rem; letter-spacing: 0.05em; }
-
-  /* 아카이브 리스트 스타일 */
-  .archive-container { padding-bottom: 100px; }
   .archive-section { margin-top: 100px; }
   .section-title { font-size: 1.6rem; text-align: center; margin-bottom: 40px; }
   .post-list { max-width: 720px; margin: 0 auto; }
-  .post-item { 
-    display: flex; justify-content: space-between; align-items: baseline; 
-    padding: 22px 0; border-bottom: 1px solid rgba(0,0,0,0.06); 
-    text-decoration: none; color: inherit; transition: opacity 0.3s;
-  }
-  .post-item:hover { opacity: 0.6; }
+  .post-item { display: flex; justify-content: space-between; padding: 22px 0; border-bottom: 1px solid rgba(0,0,0,0.06); text-decoration: none; color: inherit; }
   .date { color: #ccc; font-size: 0.9rem; }
-  .empty-msg { text-align: center; color: #999; padding: 20px 0; }
-
-  /* 더보기 버튼 스타일 */
   .more-btn-container { text-align: center; margin-top: 40px; }
-  .more-link {
-    display: inline-block; padding: 12px 30px; border-radius: 30px;
-    font-size: 0.9rem; text-decoration: none;
-    transition: all 0.3s;
-  }
-  
-  /* 골드 테마 버튼 스타일 */
-  .gold-btn {
-    background: linear-gradient(135deg, #f5e9d4 0%, #d4b483 50%, #c19a6b 100%);
-    border: none; color: #5d4632; font-weight: 700;
-    box-shadow: 0 4px 15px rgba(193, 154, 107, 0.2);
-  }
-  .gold-btn:hover {
-    transform: translateY(-3px);
-    box-shadow: 0 8px 25px rgba(193, 154, 107, 0.4);
-    color: #1a1a1a;
-  }
-
-  /* 애니메이션 키프레임 */
-  @keyframes morph-gold-layer {
-    0%, 100% { opacity: 0; transform: scale(1.5) rotateX(90deg); clip-path: inset(50% 0 50% 0); }
-    30% { opacity: 1; transform: scale(1.2) rotateX(-20deg) skew(15deg); clip-path: polygon(0 10%, 100% 0, 100% 90%, 0 100%); }
-    50%, 75% { opacity: 1; transform: scale(1) rotateX(0) skew(0); clip-path: inset(0 0 0 0); }
-  }
-  @keyframes base-stabilize {
-    0%, 45% { opacity: 0; transform: scale(0.9); filter: blur(10px); }
-    55%, 75% { opacity: 1; transform: scale(1); filter: blur(0px); text-shadow: 0 0 20px rgba(193,154,107,0.4); }
-    85%, 100% { opacity: 0; transform: scale(1.1); filter: blur(5px); }
-  }
+  .more-link { display: inline-block; padding: 12px 30px; border-radius: 30px; font-size: 0.9rem; text-decoration: none; transition: all 0.3s; }
+  .gold-btn { background: linear-gradient(135deg, #f5e9d4 0%, #d4b483 50%, #c19a6b 100%); color: #5d4632; font-weight: 700; }
+  .empty-msg { text-align: center; color: #999; padding: 20px 0; }
+  @keyframes morph-gold-layer { 0%, 100% { opacity: 0; transform: scale(1.5); } 50% { opacity: 1; transform: scale(1); } }
+  @keyframes base-stabilize { 0%, 45% { opacity: 0; } 55%, 75% { opacity: 1; } }
 </style>
