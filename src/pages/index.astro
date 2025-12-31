@@ -3,13 +3,20 @@ import { getCollection } from 'astro:content';
 import BaseLayout from '../layouts/BaseLayout.astro';
 import { getPublishedPosts, mapNotionPageToSchema } from '../lib/notion/posts';
 
+// 1. 영상 데이터 가져오기 (메인에는 최신 3개만 표시)
 const videoEntries = await getCollection('video');
-const videos = videoEntries.sort((a,b) => (b.data.pubDate?.valueOf() ?? 0) - (a.data.pubDate?.valueOf() ?? 0)).slice(0, 3);
+const videos = videoEntries
+  .sort((a, b) => (b.data.pubDate?.valueOf() ?? 0) - (a.data.pubDate?.valueOf() ?? 0))
+  .slice(0, 3);
+
+// 2. 노션 글 데이터 가져오기
 let reviews = [];
 try {
   const rawPosts = await getPublishedPosts();
   reviews = (rawPosts || []).map(mapNotionPageToSchema).slice(0, 3);
-} catch (e) {}
+} catch (e) {
+  console.error(e);
+}
 ---
 
 <BaseLayout title="Gedsc | 조용한 세계문학 서재">
@@ -24,27 +31,50 @@ try {
     <p class="hero-sub serif">기록하고, 사유하고, 천천히 공유하는 문학의 흔적</p>
   </section>
 
-  <main class="container">
-    <section class="archive">
-      <h2 class="serif">최근 기록 · 글</h2>
+  <main class="container archive-container">
+    <section class="archive-section">
+      <h2 class="serif section-title">최근 기록 · 글</h2>
       <div class="post-list">
-        {reviews.map(p => (
-          <a href={`/review/${p.id}`} class="post-item">
-            <span class="title">{p.title}</span>
-            <span class="date">{p.pubDate.toLocaleDateString('en-US')}</span>
+        {reviews.length > 0 ? (
+          reviews.map((p) => (
+            <a href={`/review/${p.id}`} class="post-item">
+              <span class="title">{p.title}</span>
+              <span class="date">{p.pubDate.toLocaleDateString('en-US')}</span>
+            </a>
+          ))
+        ) : (
+          <p class="empty-msg">기록을 불러오는 중입니다... (배포 후 확인)</p>
+        )}
+      </div>
+      <div class="more-btn-container">
+        <a href="/review" class="more-link">북리뷰 전체보기</a>
+      </div>
+    </section>
+
+    <section class="archive-section">
+      <h2 class="serif section-title">최근 기록 · 영상</h2>
+      <div class="post-list">
+        {videos.map((v) => (
+          <a href={`/video/${v.id.replace('.md', '')}`} class="post-item">
+            <span class="title">▶ {v.data.title}</span>
+            <span class="date">{v.data.pubDate?.toLocaleDateString('en-US')}</span>
           </a>
         ))}
+      </div>
+      <div class="more-btn-container">
+        <a href="/video" class="more-link gold-btn">영상리뷰 전체보기</a>
       </div>
     </section>
   </main>
 </BaseLayout>
 
 <style>
-  .hero-cyber { padding: 150px 0 100px; text-align: center; }
+  /* 히어로 스타일 */
+  .hero-cyber { padding: 150px 0 80px; text-align: center; }
   .morph-word { display: flex; justify-content: center; margin-bottom: 30px; }
   .char {
     position: relative; font-size: 7.5rem; color: #1a1a1a; font-weight: 900;
-    margin: 0 8px; perspective: 500px; text-transform: none; /* Gedsc 대소문자 유지 */
+    margin: 0 8px; perspective: 500px; text-transform: none;
   }
   .char::before {
     content: attr(data-char); position: absolute; top: 0; left: 0; width: 100%;
@@ -53,19 +83,43 @@ try {
   }
   .char-base { display: inline-block; animation: base-stabilize 4s infinite ease-in-out; }
   
-  .c1 .char-base, .c1::before { animation-delay: 0s; }
-  .c2 .char-base, .c2::before { animation-delay: 0.15s; }
-  .c3 .char-base, .c3::before { animation-delay: 0.3s; }
-  .c4 .char-base, .c4::before { animation-delay: 0.45s; }
-  .c5 .char-base, .c5::before { animation-delay: 0.6s; }
-
   .hero-sub { margin-top: 50px; color: #777; font-size: 1.1rem; letter-spacing: 0.05em; }
 
-  .archive { max-width: 720px; margin: 80px auto; }
-  .serif { font-family: 'Noto Serif KR', serif; font-weight: 700; }
-  .post-item { display: flex; justify-content: space-between; padding: 22px 0; border-bottom: 1px solid rgba(0,0,0,0.06); text-decoration: none; color: inherit; }
+  /* 아카이브 리스트 스타일 */
+  .archive-container { padding-bottom: 100px; }
+  .archive-section { margin-top: 100px; }
+  .section-title { font-size: 1.6rem; text-align: center; margin-bottom: 40px; }
+  .post-list { max-width: 720px; margin: 0 auto; }
+  .post-item { 
+    display: flex; justify-content: space-between; align-items: baseline; 
+    padding: 22px 0; border-bottom: 1px solid rgba(0,0,0,0.06); 
+    text-decoration: none; color: inherit; transition: opacity 0.3s;
+  }
+  .post-item:hover { opacity: 0.6; }
   .date { color: #ccc; font-size: 0.9rem; }
 
+  /* 더보기 버튼 스타일 (영상리뷰 연결용) */
+  .more-btn-container { text-align: center; margin-top: 40px; }
+  .more-link {
+    display: inline-block; padding: 12px 30px; border-radius: 30px;
+    font-size: 0.9rem; text-decoration: none; color: #888;
+    border: 1px solid rgba(0,0,0,0.1); transition: all 0.3s;
+  }
+  .more-link:hover { background: #fff; color: #1a1a1a; border-color: #1a1a1a; }
+  
+  /* 골드 테마 버튼 (영상리뷰 강조) */
+  .gold-btn {
+    background: linear-gradient(135deg, #f5e9d4 0%, #d4b483 50%, #c19a6b 100%);
+    border: none; color: #5d4632; font-weight: 700;
+    box-shadow: 0 4px 15px rgba(193, 154, 107, 0.2);
+  }
+  .gold-btn:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 8px 25px rgba(193, 154, 107, 0.4);
+    color: #1a1a1a;
+  }
+
+  /* 애니메이션 키프레임 */
   @keyframes morph-gold-layer {
     0%, 100% { opacity: 0; transform: scale(1.5) rotateX(90deg); clip-path: inset(50% 0 50% 0); }
     30% { opacity: 1; transform: scale(1.2) rotateX(-20deg) skew(15deg); clip-path: polygon(0 10%, 100% 0, 100% 90%, 0 100%); }
