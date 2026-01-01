@@ -17,10 +17,8 @@ const videos = allVideos
 
 <BaseLayout title="Gedsc">
   <div class="theme-beige">
-    
     <section class="hero-cyber">
       <div class="logo-wrap">
-        {/* 스크린샷의 묵직한 블랙 느낌과 동적 효과를 결합합니다 */}
         <h1 class="glitch-logo" data-text="Gedsc">Gedsc</h1>
       </div>
       <p class="hero-sub serif">기록하고, 사유하고, 천천히 공유하는 문학의 흔적</p>
@@ -32,8 +30,7 @@ const videos = allVideos
           <h2 class="serif dark-text">최근 리뷰</h2>
           <a href="/review" class="more-link">전체보기 →</a>
         </div>
-        {/* 목록 크기를 슬림하게 줄였습니다 */}
-        <div class="post-list-slim">
+        <div class="post-list-slim wide-gap">
           {reviews.map((post) => (
             <article class="post-item-slim">
               <a href={post.data.link} target="_blank" rel="noopener noreferrer">
@@ -58,7 +55,7 @@ const videos = allVideos
           {videos.map((video) => (
             <a href={`/video/${video.slug}`} class="video-card">
               <div class="video-thumb-container">
-                {/* 중요: md파일의 'youtube' 값을 가져옵니다 */}
+                {/* config.ts가 수정되었으므로 이제 이 코드가 정상 작동합니다 */}
                 <img src={video.data.youtube} alt={video.data.title} />
                 <div class="play-overlay"><span>▶</span></div>
               </div>
@@ -76,59 +73,65 @@ const videos = allVideos
 </BaseLayout>
 
 <style>
-  :root { --bg-beige: #f9f7f2; --gold-main: #b3934d; --text-black: #1a1a1a; }
+  /* --- 기존 스타일 유지 및 간격 수정 --- */
+  :root { --bg-beige: #f9f7f2; --gold-main: #b3934d; --text-black: #1a1a1a; --border-tan: #e0ddd5; }
   .theme-beige { background: var(--bg-beige); color: var(--text-black); min-height: 100vh; }
   .container { max-width: 850px; margin: 0 auto; padding: 0 20px; }
+  .dark-text { color: var(--text-black); }
 
-  /* --- [로고 정밀 수정] image_e55b45.png 스타일 완벽 반영 --- */
+  /* 히어로 및 로고 스타일 (이전과 동일) */
   .hero-cyber { padding: 140px 0 90px; text-align: center; }
   .logo-wrap { position: relative; display: inline-block; margin-bottom: 25px; }
-  
   .glitch-logo {
-    /* 폰트 굵기 900, 자간 -0.06em, 장평 조절로 스크린샷 느낌 재현 */
-    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, Arial, sans-serif;
-    font-size: 7rem; 
-    font-weight: 900; 
-    letter-spacing: -0.065em; 
-    transform: scaleX(0.97); 
-    color: var(--text-black);
-    position: relative;
-    /* 사이버틱 금색 그라데이션 동적 효과 추가 */
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+    font-size: 7rem; font-weight: 900; letter-spacing: -0.065em; transform: scaleX(0.97);
+    color: var(--text-black); position: relative; z-index: 1;
     background: linear-gradient(135deg, #000 45%, #b3934d 50%, #000 55%);
-    background-size: 250% auto;
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
+    background-size: 250% auto; -webkit-background-clip: text; -webkit-text-fill-color: transparent;
     animation: shimmer 10s linear infinite, float 6s ease-in-out infinite;
   }
-
-  /* 사이버 글리치 잔상 */
   .glitch-logo::before {
-    content: attr(data-text); position: absolute; top: 0; left: 0;
-    color: var(--gold-main); opacity: 0.5; z-index: -1;
-    animation: cyber-glitch 4s infinite linear alternate-reverse;
+    content: attr(data-text); position: absolute; top: 0; left: 0; color: var(--gold-main); opacity: 0.5; z-index: -1;
+    animation: cyber-glitch 4s infinite linear alternate-reverse; -webkit-text-fill-color: initial;
   }
-
   @keyframes shimmer { to { background-position: 250% center; } }
   @keyframes float { 0%, 100% { transform: scaleX(0.97) translateY(0); } 50% { transform: scaleX(0.97) translateY(-10px); } }
   @keyframes cyber-glitch { 0% { transform: translate(0); } 20% { transform: translate(-3px, 2px); clip-path: inset(10% 0 40% 0); } 100% { transform: translate(3px, -2px); } }
-
   .hero-sub { color: var(--gold-main); font-size: 1.15rem; margin-top: 5px; letter-spacing: 1px; }
 
-  /* --- 최근 리뷰 슬림 스타일 --- */
-  .post-list-slim { display: flex; flex-direction: column; gap: 10px; }
+  /* --- [수정됨] 최근 리뷰 목록 간격 넓힘 --- */
+  .section-block { margin-bottom: 100px; }
+  .section-header { display: flex; justify-content: space-between; align-items: flex-end; margin-bottom: 30px; border-bottom: 1px solid var(--border-tan); padding-bottom: 15px; }
+  .more-link { font-size: 0.85rem; color: var(--gold-main); text-decoration: none; }
+
+  /* gap을 25px로 넓혀 시원하게 배치 */
+  .post-list-slim.wide-gap { display: flex; flex-direction: column; gap: 25px; }
+  
   .post-item-slim a {
     display: flex; align-items: center; justify-content: space-between;
-    padding: 15px 25px; background: #fff; border-radius: 6px; text-decoration: none; color: inherit; transition: 0.3s;
+    padding: 18px 25px; background: #fff; border-radius: 6px; text-decoration: none; color: inherit; transition: 0.3s;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.02); border: 1px solid transparent;
   }
   .post-meta { display: flex; gap: 15px; font-size: 0.8rem; color: #999; flex: 0 0 160px; }
   .category { color: var(--gold-main); font-weight: 700; }
-  .post-item-slim h3 { font-size: 1.3rem; flex: 1; margin: 0; }
-  
-  .post-item-slim:hover a { transform: translateY(-2px); box-shadow: 0 5px 15px rgba(179, 147, 77, 0.1); border-left: 4px solid var(--gold-main); }
+  .post-item-slim h3 { font-size: 1.3rem; flex: 1; margin: 0; line-height: 1.3; }
+  .arrow-icon { color: #ddd; transition: 0.3s; }
 
-  /* --- 영상 썸네일 출력 보장 --- */
-  .video-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 20px; }
-  .video-thumb-container { position: relative; aspect-ratio: 16/9; border-radius: 8px; overflow: hidden; background: #000; border: 1px solid #eee; }
-  .video-thumb-container img { width: 100%; height: 100%; object-fit: cover; }
-  .video-card:hover img { opacity: 0.6; }
+  .post-item-slim:hover a { transform: translateY(-3px); box-shadow: 0 5px 15px rgba(179, 147, 77, 0.1); border-color: var(--gold-main); }
+  .post-item-slim:hover .arrow-icon { color: var(--gold-main); transform: translateX(5px); }
+
+  /* 영상 섹션 스타일 */
+  .video-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 25px; }
+  .video-card { text-decoration: none; color: inherit; }
+  .video-thumb-container { position: relative; aspect-ratio: 16/9; border-radius: 8px; overflow: hidden; background: #000; border: 1px solid var(--border-tan); }
+  .video-thumb-container img { width: 100%; height: 100%; object-fit: cover; opacity: 0.95; transition: 0.4s; }
+  .play-overlay { position: absolute; top: 0; left: 0; width: 100%; height: 100%; display: flex; align-items: center; justify-content: center; color: white; font-size: 2rem; opacity: 0; transition: 0.3s; }
+  .video-title { font-size: 1rem; margin-top: 12px; line-height: 1.4; color: #444; transition: 0.3s; }
+
+  .video-card:hover img { opacity: 0.6; transform: scale(1.03); }
+  .video-card:hover .play-overlay { opacity: 0.9; }
+  .video-card:hover .video-title { color: var(--gold-main); }
+
+  .site-footer { padding: 80px 0; text-align: center; color: #ccc; font-size: 0.85rem; border-top: 1px solid var(--border-tan); }
+  @media (max-width: 768px) { .glitch-logo { font-size: 4rem; } .post-item-slim a { flex-direction: column; align-items: flex-start; gap: 10px; } .video-grid { grid-template-columns: 1fr; } }
 </style>
