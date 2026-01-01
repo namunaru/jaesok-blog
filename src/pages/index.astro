@@ -2,11 +2,9 @@
 import BaseLayout from '../layouts/BaseLayout.astro';
 import { getCollection } from 'astro:content';
 
-// 1. 데이터 가져오기
 const allReviews = await getCollection('review');
 const allVideos = await getCollection('video');
 
-// 2. 데이터 정렬 및 필터링 (최신순 3개씩)
 const reviews = allReviews
   .filter(post => !post.data.draft)
   .sort((a, b) => b.data.pubDate.valueOf() - a.data.pubDate.valueOf())
@@ -18,115 +16,143 @@ const videos = allVideos
 ---
 
 <BaseLayout title="Gedsc">
-  <section class="hero-cyber">
-    <div class="morph-container">
-      <div class="morph-word" data-text="Gedsc">Gedsc</div>
-    </div>
-    <p class="hero-sub serif">기록하고, 사유하고, 천천히 공유하는 문학의 흔적</p>
-  </section>
-
-  <main class="container">
-    <section class="section-block">
-      <div class="section-header">
-        <h2 class="serif">최근의 기록</h2>
-        <a href="/review" class="more-link">전체보기 →</a>
+  <div class="theme-black-gold">
+    <section class="hero-cyber">
+      <div class="morph-container">
+        <div class="morph-word glitch" data-text="Gedsc">Gedsc</div>
       </div>
-      <div class="post-list-text">
-        {reviews.map((post) => (
-          <article class="post-item-text">
-            <a href={post.data.link} target="_blank" rel="noopener noreferrer">
-              <div class="post-info">
-                <div class="post-meta-top">
-                  <span class="category-text">{post.data.category || 'Review'}</span>
-                  <span class="date-text">{post.data.pubDate.toLocaleDateString('ko-KR')}</span>
+      <p class="hero-sub serif">기록하고, 사유하고, 천천히 공유하는 문학의 흔적</p>
+    </section>
+
+    <main class="container">
+      <section class="section-block">
+        <div class="section-header">
+          <h2 class="serif gold-text">최근 리뷰</h2>
+          <a href="/review" class="more-link">전체보기 →</a>
+        </div>
+        <div class="post-list-minimal">
+          {reviews.map((post) => (
+            <article class="post-item-minimal">
+              <a href={post.data.link} target="_blank" rel="noopener noreferrer">
+                <div class="post-content">
+                  <div class="post-meta">
+                    <span class="category">{post.data.category || 'Literature'}</span>
+                    <span class="date">{post.data.pubDate.toLocaleDateString('ko-KR')}</span>
+                  </div>
+                  <h3 class="serif">{post.data.title}</h3>
                 </div>
-                <h3 class="serif">{post.data.title}</h3>
-                <p class="description">{post.data.description}</p>
-                <span class="read-more">네이버 블로그에서 읽기 ↗</span>
+                <div class="arrow-icon">→</div>
+              </a>
+            </article>
+          ))}
+        </div>
+      </section>
+
+      <section class="section-block">
+        <div class="section-header">
+          <h2 class="serif gold-text">최근 영상</h2>
+          <a href="/video" class="more-link">전체보기 →</a>
+        </div>
+        <div class="video-grid">
+          {videos.map((video) => (
+            <a href={`/video/${video.slug}`} class="video-card">
+              <div class="video-thumb-container">
+                <img src={video.data.thumbnail} alt={video.data.title} />
+                <div class="play-btn">▶</div>
               </div>
+              <h3 class="serif">{video.data.title}</h3>
             </a>
-          </article>
-        ))}
-      </div>
-    </section>
+          ))}
+        </div>
+      </section>
+    </main>
 
-    <section class="section-block">
-      <div class="section-header">
-        <h2 class="serif">최근 영상</h2>
-        <a href="/video" class="more-link">전체보기 →</a>
-      </div>
-      <div class="video-grid-text">
-        {videos.map((video) => (
-          <a href={`/video/${video.slug}`} class="video-card-text">
-            <div class="video-icon"><span>▶</span></div>
-            <h3 class="serif">{video.data.title}</h3>
-            <span class="view-video">영상 보기</span>
-          </a>
-        ))}
-      </div>
-    </section>
-  </main>
-
-  <footer class="site-footer">
-    <p>© 2026 gedsc · 세계문학 기록실</p>
-  </footer>
+    <footer class="site-footer">
+      <p>© 2026 gedsc · 세계문학 기록실</p>
+    </footer>
+  </div>
 </BaseLayout>
 
 <style>
-  .container { max-width: 800px; margin: 0 auto; padding: 0 20px; }
+  :root {
+    --bg-black: #0a0a0a;
+    --card-black: #151515;
+    --gold-main: #D4AF37;
+    --gold-bright: #FFD700;
+    --text-white: #f0f0f0;
+  }
 
-  /* --- 히어로 & 동적 효과 --- */
-  .hero-cyber { padding: 140px 0 100px; text-align: center; }
-  .morph-container { position: relative; display: inline-block; margin-bottom: 20px; }
+  .theme-black-gold { background: var(--bg-black); color: var(--text-white); min-height: 100vh; }
+  .container { max-width: 900px; margin: 0 auto; padding: 0 20px; }
+  .gold-text { color: var(--gold-main) !important; }
+
+  /* 히어로 섹션 & 글리치 애니메이션 */
+  .hero-cyber { padding: 160px 0 100px; text-align: center; }
   .morph-word {
-    font-size: 6rem; font-weight: 900; letter-spacing: -3px; color: #1a1a1a;
-    animation: morph-float 6s ease-in-out infinite;
+    font-size: 7rem; font-weight: 900; letter-spacing: -4px;
+    position: relative; display: inline-block;
+    animation: float 5s ease-in-out infinite;
   }
-  .morph-word::before {
-    content: attr(data-text); position: absolute; top: 0; left: 0;
-    width: 100%; height: 100%; color: #b3934d; opacity: 0.2; z-index: -1;
-    animation: glitch-offset 4s infinite linear alternate-reverse;
+  .morph-word::before, .morph-word::after {
+    content: attr(data-text); position: absolute; top: 0; left: 0; width: 100%; height: 100%; opacity: 0.7;
   }
-  @keyframes morph-float {
-    0%, 100% { transform: translateY(0); }
-    50% { transform: translateY(-10px); }
-  }
-  @keyframes glitch-offset {
+  .morph-word::before { color: var(--gold-main); z-index: -1; animation: glitch 3s infinite; }
+  .morph-word::after { color: #ff0000; z-index: -2; animation: glitch 2s infinite reverse; opacity: 0.3; }
+
+  @keyframes float { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-15px); } }
+  @keyframes glitch {
     0% { transform: translate(0); }
-    100% { transform: translate(4px, -4px); }
+    20% { transform: translate(-3px, 2px); }
+    40% { transform: translate(-3px, -2px); }
+    60% { transform: translate(3px, 2px); }
+    80% { transform: translate(3px, -2px); }
+    100% { transform: translate(0); }
   }
-  .hero-sub { color: #b3934d; font-size: 1.1rem; opacity: 0.8; }
+  .hero-sub { color: var(--gold-main); font-size: 1.2rem; margin-top: 15px; letter-spacing: 2px; }
 
-  /* --- 공통 섹션 스타일 --- */
+  /* 최근 리뷰: 미니멀 레이아웃 */
   .section-block { margin-bottom: 120px; }
-  .section-header { display: flex; justify-content: space-between; align-items: flex-end; margin-bottom: 40px; border-bottom: 1px solid #eee; padding-bottom: 15px; }
-  .more-link { font-size: 0.85rem; color: #b3934d; text-decoration: none; text-transform: uppercase; letter-spacing: 1px; }
+  .section-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 40px; border-bottom: 1px solid #333; padding-bottom: 15px; }
+  .more-link { color: var(--gold-main); text-decoration: none; font-size: 0.9rem; }
 
-  /* --- 북리뷰 텍스트 레이아웃 --- */
-  .post-list-text { display: flex; flex-direction: column; gap: 60px; }
-  .post-item-text a { text-decoration: none; color: inherit; display: block; transition: 0.3s; }
-  .post-meta-top { display: flex; gap: 15px; font-size: 0.8rem; margin-bottom: 12px; color: #999; }
-  .category-text { color: #b3934d; font-weight: 600; text-transform: uppercase; }
-  .post-item-text h3 { font-size: 1.8rem; margin-bottom: 15px; line-height: 1.3; color: #1a1a1a; }
-  .description { font-size: 1rem; color: #666; line-height: 1.8; margin-bottom: 15px; }
-  .read-more { font-size: 0.85rem; color: #b3934d; font-weight: 500; }
-  .post-item-text:hover { transform: translateY(-5px); }
-
-  /* --- 영상 텍스트 그리드 --- */
-  .video-grid-text { display: grid; grid-template-columns: repeat(3, 1fr); gap: 30px; }
-  .video-card-text { 
-    text-decoration: none; color: inherit; padding: 30px 20px; border: 1px solid #f0f0f0; 
-    border-radius: 12px; transition: 0.3s; text-align: center; background: #fff;
+  .post-list-minimal { display: flex; flex-direction: column; gap: 20px; }
+  .post-item-minimal a {
+    display: flex; justify-content: space-between; align-items: center;
+    padding: 30px; background: var(--card-black); border-radius: 4px;
+    text-decoration: none; color: inherit; transition: 0.4s; border: 1px solid #222;
   }
-  .video-icon { font-size: 1.5rem; color: #b3934d; margin-bottom: 15px; }
-  .video-card-text h3 { font-size: 1.1rem; line-height: 1.5; margin-bottom: 15px; min-height: 3em; }
-  .view-video { font-size: 0.75rem; color: #bbb; text-transform: uppercase; letter-spacing: 1px; }
-  .video-card-text:hover { border-color: #b3934d; box-shadow: 0 10px 30px rgba(179, 147, 77, 0.1); }
+  .post-item-minimal h3 { font-size: 1.8rem; margin-top: 10px; transition: 0.3s; }
+  .post-meta { font-size: 0.85rem; color: #888; display: flex; gap: 15px; }
+  .category { color: var(--gold-main); font-weight: bold; }
+  .arrow-icon { font-size: 1.5rem; color: #444; transition: 0.3s; }
+  
+  .post-item-minimal:hover a { border-color: var(--gold-main); transform: translateX(10px); }
+  .post-item-minimal:hover h3 { color: var(--gold-bright); }
+  .post-item-minimal:hover .arrow-icon { color: var(--gold-main); transform: translateX(5px); }
 
-  .site-footer { padding: 80px 0; text-align: center; border-top: 1px solid #f9f9f9; color: #ccc; font-size: 0.85rem; }
+  /* 최근 영상: 유튜브 스타일 그리드 */
+  .video-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 25px; }
+  .video-card { text-decoration: none; color: inherit; transition: 0.3s; }
+  .video-thumb-container {
+    position: relative; aspect-ratio: 16/9; border-radius: 8px; overflow: hidden;
+    background: #000; border: 1px solid #333;
+  }
+  .video-thumb-container img { width: 100%; height: 100%; object-fit: cover; opacity: 0.8; transition: 0.4s; }
+  .play-btn {
+    position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%);
+    font-size: 2.5rem; color: var(--gold-main); opacity: 0; transition: 0.4s;
+  }
+  .video-card h3 { font-size: 1.1rem; margin-top: 15px; line-height: 1.4; color: #ccc; }
+
+  .video-card:hover img { opacity: 0.4; transform: scale(1.05); }
+  .video-card:hover .play-btn { opacity: 1; }
+  .video-card:hover h3 { color: var(--gold-main); }
+
+  .site-footer { padding: 80px 0; text-align: center; border-top: 1px solid #222; color: #666; font-size: 0.9rem; }
 
   @media (max-width: 768px) {
     .morph-word { font-size: 4rem; }
-    .video-grid-text { grid-template-columns: 1fr; }
+    .video-grid { grid-template-columns: 1fr; }
+    .post-item-minimal h3 { font-size: 1.4rem; }
   }
 </style>

@@ -2,179 +2,102 @@
 import BaseLayout from '../../layouts/BaseLayout.astro';
 import { getCollection } from 'astro:content';
 
-// 1. 마크다운 파일들 가져오기
 const allPosts = await getCollection('review');
-
-// 2. 초안이 아닌 글들을 최신순으로 정렬
 const sortedPosts = allPosts
   .filter(post => !post.data.draft)
   .sort((a, b) => b.data.pubDate.valueOf() - a.data.pubDate.valueOf());
 ---
 
-<BaseLayout title="북리뷰 | Gedsc">
-  <section class="page-header">
-    <h1 class="serif">북리뷰 Archive</h1>
-    <p class="hero-sub">기록하고, 사유하고, 천천히 공유하는 문학의 흔적</p>
-  </section>
+<BaseLayout title="북리뷰 Archive | Gedsc">
+  <div class="theme-dark">
+    <section class="page-header">
+      <h1 class="serif gold-text">북리뷰 Archive</h1>
+      <p class="hero-sub serif">기록하고, 사유하고, 천천히 공유하는 문학의 흔적</p>
+    </section>
 
-  <main class="container">
-    <div class="post-list-text">
-      {sortedPosts.length > 0 ? (
-        sortedPosts.map((post) => (
-          <article class="post-item-text">
-            {/* 클릭 시 네이버 블로그 링크로 직결 */}
-            <a href={post.data.link} target="_blank" rel="noopener noreferrer">
-              <div class="post-info">
-                <div class="post-meta-top">
-                  <span class="category-text">{post.data.category || 'World Literature'}</span>
-                  <span class="date-text">
-                    {post.data.pubDate.toLocaleDateString('ko-KR', { year: 'numeric', month: 'long', day: 'numeric' })}
-                  </span>
+    <main class="container">
+      <div class="post-list-text">
+        {sortedPosts.length > 0 ? (
+          sortedPosts.map((post) => (
+            <article class="post-item-text fade-up">
+              <a href={post.data.link} target="_blank" rel="noopener noreferrer">
+                <div class="post-info">
+                  <div class="post-meta-top">
+                    <span class="category-text">{post.data.category || 'World Literature'}</span>
+                    <span class="date-text">
+                      {post.data.pubDate.toLocaleDateString('ko-KR', { year: 'numeric', month: 'long', day: 'numeric' })}
+                    </span>
+                  </div>
+                  <h2 class="serif title-highlight">{post.data.title}</h2>
+                  <p class="description">{post.data.description}</p>
+                  <div class="post-footer">
+                    <span class="read-link">전체 내용 읽기 ↗</span>
+                    {post.data.tags && (
+                      <div class="tags">
+                        {post.data.tags.map(tag => <span class="tag">#{tag}</span>)}
+                      </div>
+                    )}
+                  </div>
                 </div>
-                <h2 class="serif">{post.data.title}</h2>
-                <p class="description">{post.data.description}</p>
-                <div class="post-footer">
-                  <span class="read-link">전체 내용 읽기 ↗</span>
-                  {post.data.tags && (
-                    <div class="tags">
-                      {post.data.tags.map(tag => <span class="tag">#{tag}</span>)}
-                    </div>
-                  )}
-                </div>
-              </div>
-            </a>
-          </article>
-        ))
-      ) : (
-        <p class="empty-msg">아직 기록된 리뷰가 없습니다.</p>
-      )}
-    </div>
-  </main>
+              </a>
+            </article>
+          ))
+        ) : (
+          <p class="empty-msg">아직 기록된 리뷰가 없습니다.</p>
+        )}
+      </div>
+    </main>
 
-  <footer class="site-footer">
-    <p>© 2026 gedsc · 세계문학 기록실</p>
-  </footer>
+    <footer class="site-footer">
+      <p>© 2026 gedsc · 세계문학 기록실</p>
+    </footer>
+  </div>
 </BaseLayout>
 
 <style>
-  /* 기본 컨테이너 설정 */
-  .container {
-    max-width: 800px;
-    margin: 0 auto;
-    padding: 60px 20px 120px;
+  /* 메인 페이지와 동일한 블랙&골드 변수 사용 */
+  :root {
+    --c-bg-dark: #111111; --c-bg-card: #1a1a1a; --c-text-light: #e0e0e0;
+    --c-gold: #D4AF37; --c-gold-hover: #F2D06B; --c-text-muted: #888888;
   }
+  .theme-dark { background-color: var(--c-bg-dark); color: var(--c-text-light); min-height: 100vh; }
+  .container { max-width: 800px; margin: 0 auto; padding: 60px 20px 120px; }
+  .gold-text { color: var(--c-gold) !important; }
 
-  /* 페이지 상단 타이틀 스타일 */
-  .page-header {
-    text-align: center;
-    padding: 100px 0 60px;
-    background: linear-gradient(to bottom, #fffaf0, #ffffff);
-  }
-  .page-header h1 {
-    font-size: 2.8rem;
-    margin-bottom: 15px;
-    color: #1a1a1a;
-  }
-  .hero-sub {
-    color: #b3934d; /* Gedsc 시그니처 골드 컬러 */
-    font-size: 1.1rem;
-    opacity: 0.8;
-  }
+  .page-header { text-align: center; padding: 120px 0 80px; background: linear-gradient(to bottom, #222, var(--c-bg-dark)); }
+  .page-header h1 { font-size: 3rem; margin-bottom: 20px; }
+  .hero-sub { color: var(--c-gold); font-size: 1.1rem; opacity: 0.8; }
 
-  /* 텍스트 중심 리스트 레이아웃 */
-  .post-list-text {
-    display: flex;
-    flex-direction: column;
-    gap: 80px;
-  }
+  .post-list-text { display: flex; flex-direction: column; gap: 60px; }
   .post-item-text a {
-    text-decoration: none;
-    color: inherit;
-    display: block;
-    transition: all 0.3s ease;
+    text-decoration: none; color: inherit; display: block; padding: 40px;
+    background: var(--c-bg-card); border: 1px solid #333; border-radius: 4px; transition: all 0.4s ease;
   }
-  
-  /* 메타 정보 (카테고리, 날짜) */
-  .post-meta-top {
-    display: flex;
-    gap: 15px;
-    font-size: 0.85rem;
-    margin-bottom: 15px;
-    color: #999;
-    letter-spacing: 0.5px;
-  }
-  .category-text {
-    color: #b3934d;
-    font-weight: 600;
-    text-transform: uppercase;
-  }
+  .post-meta-top { display: flex; gap: 15px; font-size: 0.9rem; margin-bottom: 20px; color: var(--c-text-muted); }
+  .category-text { color: var(--c-gold); font-weight: 600; text-transform: uppercase; letter-spacing: 1px; }
+  .post-item-text h2 { font-size: 2.2rem; margin-bottom: 25px; line-height: 1.3; color: var(--c-text-light); transition: 0.3s; }
+  .description { font-size: 1.05rem; color: #bbb; line-height: 1.8; margin-bottom: 30px; display: -webkit-box; -webkit-line-clamp: 3; -webkit-box-orient: vertical; overflow: hidden; }
 
-  /* 제목 및 본문 요약 */
-  .post-item-text h2 {
-    font-size: 2rem;
-    margin-bottom: 18px;
-    line-height: 1.3;
-    color: #1a1a1a;
-  }
-  .description {
-    font-size: 1.05rem;
-    color: #555;
-    line-height: 1.8;
-    margin-bottom: 20px;
-    /* 긴 설명글도 깔끔하게 정돈 */
-    display: -webkit-box;
-    -webkit-line-clamp: 3;
-    -webkit-box-orient: vertical;
-    overflow: hidden;
-  }
+  .post-footer { display: flex; justify-content: space-between; align-items: center; padding-top: 20px; border-top: 1px solid #333; }
+  .read-link { font-size: 0.95rem; color: var(--c-gold); font-weight: 500; transition: 0.3s; }
+  .tags { display: flex; gap: 10px; font-size: 0.85rem; color: var(--c-text-muted); }
+  .tag { background: #2a2a2a; padding: 4px 10px; border-radius: 12px; }
 
-  /* 하단 링크 및 태그 */
-  .post-footer {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    padding-top: 15px;
-    border-top: 1px solid #f5f5f5;
-  }
-  .read-link {
-    font-size: 0.9rem;
-    color: #b3934d;
-    font-weight: 500;
-  }
-  .tags {
-    display: flex;
-    gap: 10px;
-    font-size: 0.8rem;
-    color: #ccc;
-  }
+  /* 호버 효과 */
+  .post-item-text:hover a { transform: translateY(-7px); border-color: var(--c-gold); box-shadow: 0 10px 30px -10px rgba(212, 175, 55, 0.2); }
+  .post-item-text:hover h2 { color: var(--c-gold-hover); }
+  .post-item-text:hover .read-link { letter-spacing: 1px; }
 
-  /* 마우스 호버 효과 */
-  .post-item-text:hover {
-    transform: translateY(-5px);
-  }
-  .post-item-text:hover h2 {
-    color: #b3934d;
-  }
+  .fade-up { opacity: 0; transform: translateY(30px); animation: fadeUpAnim 0.8s ease-out forwards; }
+  @keyframes fadeUpAnim { to { opacity: 1; transform: translateY(0); } }
 
-  /* 푸터 스타일 */
-  .site-footer {
-    padding: 80px 0;
-    text-align: center;
-    border-top: 1px solid #eee;
-    color: #bbb;
-    font-size: 0.85rem;
-  }
+  .site-footer { padding: 80px 0; text-align: center; border-top: 1px solid #333; color: var(--c-text-muted); font-size: 0.85rem; }
+  .empty-msg { text-align: center; color: var(--c-text-muted); padding: 100px 0; }
 
-  .empty-msg {
-    text-align: center;
-    color: #999;
-    padding: 100px 0;
-  }
-
-  /* 모바일 최적화 */
   @media (max-width: 768px) {
-    .page-header h1 { font-size: 2rem; }
-    .post-item-text h2 { font-size: 1.6rem; }
-    .post-footer { flex-direction: column; align-items: flex-start; gap: 10px; }
+    .page-header h1 { font-size: 2.2rem; }
+    .post-item-text h2 { font-size: 1.8rem; }
+    .post-item-text a { padding: 25px; }
+    .post-footer { flex-direction: column; align-items: flex-start; gap: 15px; }
   }
 </style>

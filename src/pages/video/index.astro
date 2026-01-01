@@ -1,36 +1,75 @@
 ---
-import { getCollection } from 'astro:content';
 import BaseLayout from '../../layouts/BaseLayout.astro';
+import { getCollection } from 'astro:content';
 
 const videos = await getCollection('video');
-const sortedVideos = videos.sort((a, b) => (b.data.pubDate?.valueOf() ?? 0) - (a.data.pubDate?.valueOf() ?? 0));
+const sortedVideos = videos.sort((a, b) => b.data.pubDate.valueOf() - a.data.pubDate.valueOf());
 ---
 
-<BaseLayout title="영상리뷰 | gedsc">
-  <main class="archive-container container">
-    <header class="page-header">
-      <h1 class="serif">영상리뷰</h1>
-      <p class="subtitle">책을 읽고, 말로 풀어내는 기록들</p>
-    </header>
+<BaseLayout title="영상리뷰 | Gedsc">
+  <div class="theme-black-gold">
+    <section class="page-header">
+      <h1 class="serif gold-text">영상리뷰 Archive</h1>
+      <p class="hero-sub serif">시각과 청각으로 만나는 문학의 세계</p>
+    </section>
 
-    <div class="post-list">
-      {sortedVideos.map(v => (
-        <a href={`/video/${v.id.replace('.md', '')}`} class="post-item">
-          <span class="post-title">▶ {v.data.title}</span>
-          <span class="post-date">{v.data.pubDate?.toLocaleDateString('en-US')}</span>
-        </a>
-      ))}
-    </div>
-  </main>
+    <main class="container">
+      <div class="video-full-grid">
+        {sortedVideos.map((video) => (
+          <a href={`/video/${video.slug}`} class="video-card-full">
+            <div class="thumb-box">
+              <img src={video.data.thumbnail} alt={video.data.title} />
+              <div class="play-overlay"><span>VIEW VIDEO</span></div>
+            </div>
+            <div class="video-info">
+              <span class="date">{video.data.pubDate.toLocaleDateString('ko-KR')}</span>
+              <h2 class="serif">{video.data.title}</h2>
+            </div>
+          </a>
+        ))}
+      </div>
+    </main>
+
+    <footer class="site-footer">
+      <p>© 2026 gedsc · 세계문학 기록실</p>
+    </footer>
+  </div>
 </BaseLayout>
 
 <style>
-  .archive-container { padding: 100px 20px; max-width: 720px; }
-  .page-header { text-align: center; margin-bottom: 80px; }
-  .page-header h1 { font-size: 2.2rem; margin-bottom: 15px; }
-  .subtitle { color: #888; font-size: 1rem; }
-  .post-list { display: flex; flex-direction: column; }
-  .post-item { display: flex; justify-content: space-between; align-items: baseline; padding: 22px 0; border-bottom: 1px solid rgba(0, 0, 0, 0.06); }
-  .post-title { font-size: 1.1rem; flex: 1; margin-right: 20px; }
-  .post-date { font-size: 0.85rem; color: #ccc; }
+  :root { --bg-black: #0a0a0a; --gold-main: #D4AF37; --text-white: #f0f0f0; }
+  .theme-black-gold { background: var(--bg-black); color: var(--text-white); min-height: 100vh; }
+  .container { max-width: 1000px; margin: 0 auto; padding: 60px 20px 120px; }
+  .gold-text { color: var(--gold-main) !important; }
+
+  .page-header { text-align: center; padding: 120px 0 60px; background: linear-gradient(to bottom, #151515, var(--bg-black)); }
+  .page-header h1 { font-size: 3rem; margin-bottom: 20px; }
+  .hero-sub { color: var(--gold-main); font-size: 1.1rem; opacity: 0.8; letter-spacing: 1px; }
+
+  .video-full-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 40px; }
+  .video-card-full { text-decoration: none; color: inherit; }
+  .thumb-box { position: relative; aspect-ratio: 16/9; border-radius: 12px; overflow: hidden; background: #000; border: 1px solid #333; }
+  .thumb-box img { width: 100%; height: 100%; object-fit: cover; opacity: 0.9; transition: 0.5s; }
+  
+  .play-overlay {
+    position: absolute; top: 0; left: 0; width: 100%; height: 100%;
+    display: flex; align-items: center; justify-content: center;
+    background: rgba(0,0,0,0.6); color: var(--gold-main); font-weight: bold;
+    letter-spacing: 2px; opacity: 0; transition: 0.4s;
+  }
+
+  .video-info { padding: 20px 5px; }
+  .video-info .date { font-size: 0.85rem; color: #666; margin-bottom: 10px; display: block; }
+  .video-info h2 { font-size: 1.6rem; line-height: 1.4; transition: 0.3s; }
+
+  .video-card-full:hover .thumb-box img { transform: scale(1.05); opacity: 0.5; }
+  .video-card-full:hover .play-overlay { opacity: 1; }
+  .video-card-full:hover h2 { color: var(--gold-main); }
+
+  .site-footer { padding: 80px 0; text-align: center; border-top: 1px solid #222; color: #444; }
+
+  @media (max-width: 768px) {
+    .video-full-grid { grid-template-columns: 1fr; }
+    .page-header h1 { font-size: 2.2rem; }
+  }
 </style>
