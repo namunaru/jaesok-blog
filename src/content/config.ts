@@ -15,8 +15,8 @@ const video = defineCollection({
   schema: z.object({
     title: z.string(),
     pubDate: z.coerce.date(),
-    // 사용자님의 md 파일에 적힌 'youtube' 주소를 읽습니다.
-    youtube: z.string(), 
+    // 이제 전체 URL을 입력받습니다.
+    youtube: z.string().url(), 
     draft: z.boolean().default(false),
   }),
 });

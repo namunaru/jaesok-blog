@@ -2,26 +2,29 @@
 import BaseLayout from '../layouts/BaseLayout.astro';
 import { getCollection } from 'astro:content';
 
+// 유튜브 주소에서 썸네일 추출하는 함수
+function getYouTubeThumbnail(url: string) {
+  const regExp = /^.*(youtu.be\/|v\/|u\/\w\/|embed\/|watch\?v=|&v=)([^#&?]*).*/;
+  const match = url.match(regExp);
+  // ID가 11자리일 경우 썸네일 반환, 아니면 기본 이미지
+  return (match && match[2].length === 11)
+    ? `https://img.youtube.com/vi/${match[2]}/maxresdefault.jpg`
+    : '/fallback-image.png';
+}
+
 const allReviews = await getCollection('review');
 const allVideos = await getCollection('video');
 
-const reviews = allReviews
-  .filter(post => !post.data.draft)
-  .sort((a, b) => b.data.pubDate.valueOf() - a.data.pubDate.valueOf())
-  .slice(0, 3);
-
-const videos = allVideos
-  .sort((a, b) => b.data.pubDate.valueOf() - a.data.pubDate.valueOf())
-  .slice(0, 3);
+const reviews = allReviews.filter(p => !p.data.draft).sort((a, b) => b.data.pubDate.valueOf() - a.data.pubDate.valueOf()).slice(0, 3);
+const videos = allVideos.sort((a, b) => b.data.pubDate.valueOf() - a.data.pubDate.valueOf()).slice(0, 3);
 ---
 
 <BaseLayout title="Gedsc">
   <div class="theme-beige">
     
-    <section class="hero-gold">
+    <section class="hero-cyber">
       <div class="logo-wrap">
-        {/* 이미지 스타일의 묵직한 골드 로고 적용 */}
-        <h1 class="gold-logo">Gedsc</h1>
+        <h1 class="glitch-logo" data-text="Gedsc">Gedsc</h1>
       </div>
       <p class="hero-sub serif">기록하고, 사유하고, 천천히 공유하는 문학의 흔적</p>
     </section>
@@ -57,7 +60,8 @@ const videos = allVideos
           {videos.map((video) => (
             <a href={`/video/${video.slug}`} class="video-card">
               <div class="video-thumb-container">
-                <img src={video.data.youtube} alt={video.data.title} loading="lazy" />
+                {/* 입력된 유튜브 주소를 함수에 넣어 썸네일을 자동으로 가져옵니다. */}
+                <img src={getYouTubeThumbnail(video.data.youtube)} alt={video.data.title} loading="lazy" />
                 <div class="play-overlay"><span>▶</span></div>
               </div>
               <h3 class="serif video-title">{video.data.title}</h3>
@@ -74,48 +78,58 @@ const videos = allVideos
 </BaseLayout>
 
 <style>
-  :root {
-    --bg-beige: #f9f7f2;
-    --gold-main: #b3934d; /* 기본 골드색 */
-    --text-black: #1a1a1a;
-    --border-tan: #e0ddd5;
-  }
-
+  :root { --bg-beige: #f9f7f2; --gold-main: #b3934d; --text-black: #1a1a1a; --border-tan: #e0ddd5; }
   .theme-beige { background: var(--bg-beige); color: var(--text-black); min-height: 100vh; }
   .container { max-width: 850px; margin: 0 auto; padding: 0 20px; }
   .dark-text { color: var(--text-black); }
 
-  /* --- 로고 스타일 핵심 수정 부분 --- */
-  .hero-gold { padding: 140px 0 90px; text-align: center; }
-  .logo-wrap { display: inline-block; margin-bottom: 25px; }
+  /* --- 로고 스타일: 골드 + 사이버틱 동적 움직임 --- */
+  .hero-cyber { padding: 140px 0 90px; text-align: center; }
+  .logo-wrap { position: relative; display: inline-block; margin-bottom: 25px; }
   
-  .gold-logo {
-    /* 1. 폰트 스타일: 이미지와 같이 묵직하고 꽉 찬 느낌 */
+  .glitch-logo {
     font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
     font-size: 7.5rem; 
     font-weight: 900; 
-    letter-spacing: -0.06em; /* 자간을 좁혀 단단한 느낌 강조 */
+    letter-spacing: 0.06em;
     margin: 0;
-
-    /* 2. 골드 그라데이션 질감 표현 */
-    background: linear-gradient(
-      to bottom right,
-      #c7a252 10%, /* 밝은 금색 시작 */
-      #e6c37d 45%, /* 하이라이트 */
-      #b88a4d 65%, /* 중간 톤 */
-      #8c6239 90%  /* 어두운 음영 */
-    );
-    /* 배경을 텍스트 모양으로 잘라냄 */
+    position: relative;
+    z-index: 1;
+    /* 고급스러운 골드 그라데이션 */
+    background: linear-gradient(to bottom right, #c7a252 10%, #e6c37d 45%, #b88a4d 65%, #8c6239 90%);
+    background-size: 200% auto;
     -webkit-background-clip: text;
     -webkit-text-fill-color: transparent;
-
-    /* 3. 입체감 및 가독성을 위한 은은한 그림자 */
-    filter: drop-shadow(0px 2px 3px rgba(0,0,0,0.3));
+    /* 일렁이는 빛(shimmer)과 둥둥 떠다니는(float) 애니메이션 */
+    animation: shimmer 8s linear infinite, float 6s ease-in-out infinite;
+    filter: drop-shadow(0px 2px 3px rgba(0,0,0,0.2));
   }
 
-  .hero-sub { color: var(--gold-main); font-size: 1.15rem; margin-top: 10px; letter-spacing: 1px; }
+  /* 사이버틱 글리치 잔상 효과 */
+  .glitch-logo::before {
+    content: attr(data-text); position: absolute; top: 0; left: 0; width: 100%; height: 100%;
+    z-index: -1; 
+    background: inherit; /* 부모의 골드색 상속 */
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    opacity: 0.5;
+    animation: cyber-glitch 4s infinite linear alternate-reverse;
+  }
 
-  /* --- 나머지 섹션 스타일 (기존 유지) --- */
+  @keyframes shimmer { to { background-position: 200% center; } }
+  @keyframes float { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-8px); } }
+  @keyframes cyber-glitch { 
+    0% { transform: translate(0); clip-path: inset(0 0 0 0); }
+    20% { transform: translate(-3px, 2px); clip-path: inset(15% 0 45% 0); }
+    40% { transform: translate(3px, -2px); clip-path: inset(45% 0 15% 0); }
+    60% { transform: translate(-3px, 2px); clip-path: inset(10% 0 60% 0); }
+    80% { transform: translate(3px, -2px); clip-path: inset(60% 0 10% 0); }
+    100% { transform: translate(0); clip-path: inset(0 0 0 0); }
+  }
+
+  .hero-sub { color: var(--gold-main); font-size: 1.15rem; margin-top: 15px; letter-spacing: 1px; }
+
+  /* --- 기타 섹션 스타일 (기존 유지) --- */
   .section-block { margin-bottom: 100px; }
   .section-header { display: flex; justify-content: space-between; align-items: flex-end; margin-bottom: 30px; border-bottom: 1px solid var(--border-tan); padding-bottom: 15px; }
   .more-link { font-size: 0.85rem; color: var(--gold-main); text-decoration: none; }
@@ -140,5 +154,5 @@ const videos = allVideos
   .video-card:hover .video-title { color: var(--gold-main); }
 
   .site-footer { padding: 80px 0; text-align: center; color: #ccc; font-size: 0.85rem; border-top: 1px solid var(--border-tan); }
-  @media (max-width: 768px) { .gold-logo { font-size: 4.5rem; } .post-item-slim a { flex-direction: column; align-items: flex-start; gap: 10px; } .video-grid { grid-template-columns: 1fr; } }
+  @media (max-width: 768px) { .glitch-logo { font-size: 5rem; } .post-item-slim a { flex-direction: column; align-items: flex-start; gap: 10px; } .video-grid { grid-template-columns: 1fr; } }
 </style>

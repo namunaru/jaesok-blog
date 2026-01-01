@@ -1,7 +1,7 @@
 ---
 title: "내 인생의 주인은 나! 《제인 에어》가 170년 동안 사랑받는 진짜 이유"
 pubDate: 2025-12-29
-youtube: "https://www.youtube.com/watch?v=fAuZQ5FIqe0"
+youtube: "https://youtu.be/fAuZQ5FIqe0"
 description: |
   여러분은 살면서 "이건 부당해!"라고 외치고 싶었던 순간이 있나요?
   세상이 정해놓은 '나의 등급'에 갇혀 숨이 막혔던 적은요?
