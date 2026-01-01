@@ -1,20 +1,26 @@
 import { defineCollection, z } from 'astro:content';
 
-const reviewCollection = defineCollection({
-  type: 'content',
+const review = defineCollection({
   schema: z.object({
     title: z.string(),
-    pubDate: z.date(),
+    pubDate: z.coerce.date(),
     description: z.string(),
-    thumbnail: z.string(),
+    // 기존 thumbnail 대신 사용자님이 쓰시는 'youtube'를 추가합니다.
+    youtube: z.string().optional(), 
+    thumbnail: z.string().optional(),
     link: z.string().url(),
-    category: z.string().optional(),     // 카테고리 (선택사항)
-    tags: z.array(z.string()).optional(), // 태그 배열 (선택사항)
-    featured: z.boolean().default(false), // 강조 여부 (기본값 false)
-    draft: z.boolean().default(false),    // 초안 여부 (기본값 false)
+    category: z.string().optional(),
   }),
 });
 
-export const collections = {
-  'review': reviewCollection,
-};
+const video = defineCollection({
+  schema: z.object({
+    title: z.string(),
+    pubDate: z.coerce.date(),
+    // 영상 파일에서도 'youtube' 필드를 인식하도록 합니다.
+    youtube: z.string(), 
+    description: z.string().optional(),
+  }),
+});
+
+export const collections = { review, video };

@@ -1,5 +1,5 @@
 ---
-import BaseLayout from '../../layouts/BaseLayout.astro'; // 경로 수정
+import BaseLayout from '../../layouts/BaseLayout.astro'; // 경로를 ../../ 로 수정
 import { getCollection } from 'astro:content';
 
 const videos = await getCollection('video');
@@ -19,9 +19,8 @@ const sortedVideos = videos.sort((a, b) => b.data.pubDate.valueOf() - a.data.pub
           <article class="video-item">
             <a href={`/video/${video.slug}`}>
               <div class="thumb-wrap">
-                {/* 데이터 필드를 'youtube'로 수정 */}
+                {/* 중요: md파일의 'youtube' 값을 사용합니다 */}
                 <img src={video.data.youtube} alt={video.data.title} />
-                <div class="play-icon">▶</div>
               </div>
               <div class="info">
                 <span class="date">{video.data.pubDate.toLocaleDateString('ko-KR')}</span>
@@ -32,33 +31,14 @@ const sortedVideos = videos.sort((a, b) => b.data.pubDate.valueOf() - a.data.pub
         ))}
       </div>
     </main>
-
-    <footer class="site-footer">
-      <p>© 2026 gedsc · 세계문학 기록실</p>
-    </footer>
   </div>
 </BaseLayout>
 
 <style>
-  .theme-beige { background: #f9f7f2; min-height: 100vh; }
+  .theme-beige { background: #f9f7f2; min-height: 100vh; color: #1a1a1a; }
   .container { max-width: 1000px; margin: 0 auto; padding: 0 20px 100px; }
   .page-header { text-align: center; padding: 120px 0 70px; }
-  .hero-sub { color: #b3934d; font-size: 1.1rem; }
-
   .video-grid-archive { display: grid; grid-template-columns: repeat(2, 1fr); gap: 40px; }
-  .thumb-wrap { position: relative; aspect-ratio: 16/9; border-radius: 10px; overflow: hidden; background: #000; }
-  .thumb-wrap img { width: 100%; height: 100%; object-fit: cover; opacity: 0.9; transition: 0.4s; }
-  .play-icon { position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); color: white; font-size: 3rem; opacity: 0; transition: 0.3s; }
-  
-  .info { padding: 15px 5px; }
-  .date { font-size: 0.85rem; color: #999; }
-  .info h2 { font-size: 1.5rem; margin-top: 8px; transition: 0.3s; }
-
-  .video-item:hover { transform: translateY(-5px); }
-  .video-item:hover img { opacity: 0.6; }
-  .video-item:hover .play-icon { opacity: 1; }
-  .video-item:hover h2 { color: #b3934d; }
-  
-  .site-footer { padding: 80px 0; text-align: center; color: #bbb; border-top: 1px solid #eee; }
-  @media (max-width: 768px) { .video-grid-archive { grid-template-columns: 1fr; } }
+  .thumb-wrap { aspect-ratio: 16/9; border-radius: 10px; overflow: hidden; border: 1px solid #e0ddd5; }
+  .thumb-wrap img { width: 100%; height: 100%; object-fit: cover; }
 </style>
