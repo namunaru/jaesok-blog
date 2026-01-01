@@ -1,38 +1,74 @@
 ---
-import BaseLayout from '../../layouts/BaseLayout.astro';
+import BaseLayout from '../layouts/BaseLayout.astro';
 import { getCollection } from 'astro:content';
 
-// 1. 영상 데이터 가져오기 및 정렬
-const videos = await getCollection('video');
-const sortedVideos = videos.sort((a, b) => b.data.pubDate.valueOf() - a.data.pubDate.valueOf());
+// 1. 데이터 가져오기
+const allReviews = await getCollection('review');
+const allVideos = await getCollection('video');
+
+// 2. 정렬 및 개수 제한
+const reviews = allReviews
+  .filter(post => !post.data.draft)
+  .sort((a, b) => b.data.pubDate.valueOf() - a.data.pubDate.valueOf())
+  .slice(0, 3);
+
+const videos = allVideos
+  .sort((a, b) => b.data.pubDate.valueOf() - a.data.pubDate.valueOf())
+  .slice(0, 3);
 ---
 
-<BaseLayout title="영상리뷰 Archive | Gedsc">
+<BaseLayout title="Gedsc">
   <div class="theme-beige">
     
-    <section class="page-header">
-      <h1 class="serif dark-text">영상리뷰 Archive</h1>
-      <p class="hero-sub serif">시각과 청각으로 만나는 문학의 세계</p>
+    <section class="hero-cyber">
+      <div class="logo-wrap">
+        <h1 class="glitch-logo" data-text="Gedsc">Gedsc</h1>
+      </div>
+      <p class="hero-sub serif">기록하고, 사유하고, 천천히 공유하는 문학의 흔적</p>
     </section>
 
     <main class="container">
-      <div class="video-archive-grid">
-        {sortedVideos.map((video) => (
-          <article class="video-archive-item">
-            <a href={`/video/${video.slug}`} class="video-link">
-              <div class="thumb-wrapper">
-                {/* 유튜브 서버에서 직접 가져오는 고화질 썸네일 */}
-                <img src={video.data.thumbnail} alt={video.data.title} loading="lazy" />
-                <div class="play-indicator">▶</div>
+      <section class="section-block">
+        <div class="section-header">
+          <h2 class="serif dark-text">최근 리뷰</h2>
+          <a href="/review" class="more-link">전체보기 →</a>
+        </div>
+        <div class="post-list-slim">
+          {reviews.map((post) => (
+            <article class="post-item-slim">
+              <a href={post.data.link} target="_blank" rel="noopener noreferrer">
+                <div class="post-meta">
+                  <span class="category">{post.data.category || 'Review'}</span>
+                  <span class="date">{post.data.pubDate.toLocaleDateString('ko-KR')}</span>
+                </div>
+                <h3 class="serif">{post.data.title}</h3>
+                <div class="arrow-icon">→</div>
+              </a>
+            </article>
+          ))}
+        </div>
+      </section>
+
+      <section class="section-block">
+        <div class="section-header">
+          <h2 class="serif dark-text">최근 영상</h2>
+          <a href="/video" class="more-link">전체보기 →</a>
+        </div>
+        <div class="video-grid">
+          {videos.map((video) => (
+            <a href={`/video/${video.slug}`} class="video-card">
+              <div class="video-thumb-container">
+                {/* 사용자님의 마크다운 속성명이 'youtube'이므로 이를 참조합니다. 
+                  
+                */}
+                <img src={video.data.youtube} alt={video.data.title} loading="lazy" />
+                <div class="play-overlay"><span>▶</span></div>
               </div>
-              <div class="video-content">
-                <span class="video-date">{video.data.pubDate.toLocaleDateString('ko-KR')}</span>
-                <h2 class="serif">{video.data.title}</h2>
-              </div>
+              <h3 class="serif video-title">{video.data.title}</h3>
             </a>
-          </article>
-        ))}
-      </div>
+          ))}
+        </div>
+      </section>
     </main>
 
     <footer class="site-footer">
@@ -43,57 +79,102 @@ const sortedVideos = videos.sort((a, b) => b.data.pubDate.valueOf() - a.data.pub
 
 <style>
   :root {
-    --bg-beige: #f9f7f2; /* 원래의 베이지 배경색 */
-    --gold-deep: #b3934d;
-    --text-dark: #1a1a1a;
-    --border-light: #e0ddd5;
+    --bg-beige: #f9f7f2;
+    --gold-main: #b3934d;
+    --text-black: #1a1a1a;
+    --border-tan: #e0ddd5;
   }
 
-  .theme-beige { background: var(--bg-beige); color: var(--text-dark); min-height: 100vh; }
-  .container { max-width: 1000px; margin: 0 auto; padding: 0 20px 100px; }
-  .dark-text { color: var(--text-dark); }
+  .theme-beige { background: var(--bg-beige); color: var(--text-black); min-height: 100vh; }
+  .container { max-width: 850px; margin: 0 auto; padding: 0 20px; }
+  .dark-text { color: var(--text-black); }
 
-  /* 페이지 상단 헤더 */
-  .page-header { text-align: center; padding: 120px 0 70px; }
-  .page-header h1 { font-size: 2.8rem; margin-bottom: 15px; }
-  .hero-sub { color: var(--gold-deep); font-size: 1.1rem; opacity: 0.8; }
-
-  /* 영상 아카이브 그리드 설정 */
-  .video-archive-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 40px; }
-  .video-archive-item { transition: transform 0.3s ease; }
+  /* --- [로고 정밀 수정] 스크린샷 폰트 스타일 반영 --- */
+  .hero-cyber { padding: 140px 0 90px; text-align: center; }
+  .logo-wrap { position: relative; display: inline-block; margin-bottom: 25px; }
   
-  .video-link { text-decoration: none; color: inherit; display: block; }
-  
-  /* 썸네일 박스 스타일 */
-  .thumb-wrapper {
-    position: relative; aspect-ratio: 16/9; border-radius: 10px; overflow: hidden;
-    background: #000; box-shadow: 0 5px 20px rgba(0,0,0,0.08); border: 1px solid var(--border-light);
-  }
-  .thumb-wrapper img { width: 100%; height: 100%; object-fit: cover; transition: 0.5s; opacity: 0.95; }
-  
-  /* 플레이 버튼 오버레이 */
-  .play-indicator {
-    position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%);
-    font-size: 3rem; color: white; opacity: 0; transition: 0.4s; z-index: 2;
+  .glitch-logo {
+    /* 폰트: 시스템 굵은 고딕체 */
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, Arial, sans-serif;
+    font-size: 6.8rem; 
+    font-weight: 900; 
+    letter-spacing: -0.06em; /* 자간을 아주 좁게 설정 */
+    transform: scaleX(0.96);  /* 장평(폭)을 미세하게 좁게 조정 */
+    color: var(--text-black);
+    position: relative;
+    z-index: 1;
+    /* 황금빛 그라데이션 추가 */
+    background: linear-gradient(135deg, #1a1a1a 40%, #b3934d 50%, #1a1a1a 60%);
+    background-size: 200% auto;
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    animation: shimmer 8s linear infinite, logo-float 6s ease-in-out infinite;
   }
 
-  /* 영상 정보 텍스트 */
-  .video-content { padding: 20px 5px; }
-  .video-date { font-size: 0.85rem; color: #999; margin-bottom: 8px; display: block; }
-  .video-content h2 { font-size: 1.6rem; line-height: 1.4; color: var(--text-dark); transition: 0.3s; }
+  /* 사이버틱 글리치 잔상 (블랙&골드 조화) */
+  .glitch-logo::before, .glitch-logo::after {
+    content: attr(data-text); position: absolute; top: 0; left: 0; width: 100%; height: 100%;
+    z-index: -1; -webkit-text-fill-color: initial;
+  }
+  .glitch-logo::before { 
+    color: var(--gold-main); opacity: 0.6; 
+    animation: cyber-glitch-1 4s infinite linear alternate-reverse; 
+  }
+  .glitch-logo::after { 
+    color: #000; opacity: 0.2; 
+    animation: cyber-glitch-2 2s infinite linear alternate; 
+  }
 
-  /* 호버 효과 */
-  .video-archive-item:hover { transform: translateY(-8px); }
-  .video-archive-item:hover img { opacity: 0.6; transform: scale(1.05); }
-  .video-archive-item:hover .play-indicator { opacity: 0.8; }
-  .video-archive-item:hover h2 { color: var(--gold-deep); }
+  @keyframes shimmer { to { background-position: 200% center; } }
+  @keyframes logo-float { 0%, 100% { transform: scaleX(0.96) translateY(0); } 50% { transform: scaleX(0.96) translateY(-10px); } }
+  @keyframes cyber-glitch-1 {
+    0% { transform: translate(0); }
+    20% { transform: translate(-3px, 2px); clip-path: inset(10% 0 40% 0); }
+    80% { transform: translate(3px, -2px); clip-path: inset(50% 0 10% 0); }
+    100% { transform: translate(0); }
+  }
+  @keyframes cyber-glitch-2 { 0% { opacity: 0; } 50% { opacity: 0.3; transform: skewX(12deg); } 100% { opacity: 0; } }
 
-  .site-footer { padding: 80px 0; text-align: center; border-top: 1px solid var(--border-light); color: #bbb; font-size: 0.85rem; }
+  .hero-sub { color: var(--gold-main); font-size: 1.15rem; margin-top: 5px; letter-spacing: 1px; }
 
-  /* 모바일 대응 */
+  /* --- 최근 리뷰 슬림 스타일 --- */
+  .section-block { margin-bottom: 100px; }
+  .section-header { display: flex; justify-content: space-between; align-items: flex-end; margin-bottom: 30px; border-bottom: 1px solid var(--border-tan); padding-bottom: 15px; }
+  .more-link { font-size: 0.85rem; color: var(--gold-main); text-decoration: none; }
+
+  .post-list-slim { display: flex; flex-direction: column; gap: 12px; }
+  .post-item-slim a {
+    display: flex; align-items: center; justify-content: space-between;
+    padding: 16px 25px; background: #fff; border-radius: 6px;
+    text-decoration: none; color: inherit; transition: 0.3s;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.02);
+  }
+  .post-meta { display: flex; gap: 15px; font-size: 0.8rem; color: #999; flex: 0 0 160px; }
+  .category { color: var(--gold-main); font-weight: 700; }
+  .post-item-slim h3 { font-size: 1.3rem; flex: 1; margin: 0; line-height: 1.2; }
+  .arrow-icon { color: #ddd; transition: 0.3s; }
+
+  .post-item-slim:hover a { transform: translateY(-3px); box-shadow: 0 5px 15px rgba(179, 147, 77, 0.1); border-left: 4px solid var(--gold-main); }
+  .post-item-slim:hover h3 { color: var(--gold-main); }
+  .post-item-slim:hover .arrow-icon { color: var(--gold-main); transform: translateX(5px); }
+
+  /* --- 최근 영상: 유튜브 썸네일 고정 --- */
+  .video-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 20px; }
+  .video-card { text-decoration: none; color: inherit; }
+  .video-thumb-container { position: relative; aspect-ratio: 16/9; border-radius: 8px; overflow: hidden; background: #000; }
+  .video-thumb-container img { width: 100%; height: 100%; object-fit: cover; opacity: 0.95; transition: 0.4s; }
+  .play-overlay { position: absolute; top: 0; left: 0; width: 100%; height: 100%; display: flex; align-items: center; justify-content: center; color: white; font-size: 2rem; opacity: 0; transition: 0.3s; }
+  .video-title { font-size: 1rem; margin-top: 12px; line-height: 1.4; color: #444; }
+
+  .video-card:hover img { opacity: 0.5; transform: scale(1.05); }
+  .video-card:hover .play-overlay { opacity: 0.8; }
+  .video-card:hover .video-title { color: var(--gold-main); }
+
+  .site-footer { padding: 80px 0; text-align: center; color: #ccc; font-size: 0.85rem; border-top: 1px solid #eee; }
+
   @media (max-width: 768px) {
-    .video-archive-grid { grid-template-columns: 1fr; }
-    .page-header h1 { font-size: 2.2rem; }
-    .video-content h2 { font-size: 1.4rem; }
+    .glitch-logo { font-size: 4rem; }
+    .post-item-slim a { flex-direction: column; align-items: flex-start; gap: 10px; }
+    .video-grid { grid-template-columns: 1fr; }
   }
 </style>
