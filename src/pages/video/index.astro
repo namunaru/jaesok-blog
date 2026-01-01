@@ -1,5 +1,5 @@
 ---
-// 경로 오류를 해결하기 위해 반드시 ../../ 로 시작해야 합니다
+// 경로를 반드시 ../../ 로 유지하세요.
 import BaseLayout from '../../layouts/BaseLayout.astro';
 import { getCollection } from 'astro:content';
 
@@ -10,21 +10,22 @@ const sortedVideos = videos.sort((a, b) => b.data.pubDate.valueOf() - a.data.pub
 <BaseLayout title="영상리뷰 Archive | Gedsc">
   <div class="theme-beige">
     <section class="page-header-simple">
-      <h1 class="serif">영상리뷰 Archive</h1>
+      <h1 class="serif dark-text">영상리뷰 Archive</h1>
     </section>
+
     <main class="container">
-      <div class="video-archive-grid">
+      <div class="video-grid-archive">
         {sortedVideos.map((video) => (
           <article class="video-item">
             <a href={`/video/${video.slug}`}>
               <div class="thumb-wrap">
-                {/* youtube 필드 데이터를 호출하여 이미지를 띄웁니다 */}
+                {/* md파일의 youtube 필드를 호출합니다. */}
                 <img src={video.data.youtube} alt={video.data.title} />
                 <div class="play-icon">▶</div>
               </div>
               <div class="info">
-                <h2 class="serif">{video.data.title}</h2>
                 <span class="date">{video.data.pubDate.toLocaleDateString('ko-KR')}</span>
+                <h2 class="serif">{video.data.title}</h2>
               </div>
             </a>
           </article>
@@ -35,12 +36,15 @@ const sortedVideos = videos.sort((a, b) => b.data.pubDate.valueOf() - a.data.pub
 </BaseLayout>
 
 <style>
-  .theme-beige { background: #f9f7f2; min-height: 100vh; padding-bottom: 100px; }
+  .theme-beige { background: #f9f7f2; min-height: 100vh; color: #1a1a1a; }
+  .container { max-width: 1000px; margin: 0 auto; padding: 40px 20px 100px; }
   .page-header-simple { text-align: center; padding: 80px 0 50px; border-bottom: 1px solid #e0ddd5; margin-bottom: 50px; }
-  .container { max-width: 1000px; margin: 0 auto; padding: 0 20px; }
-  .video-archive-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 40px; }
-  .thumb-wrap { position: relative; aspect-ratio: 16/9; border-radius: 10px; overflow: hidden; background: #000; border: 1px solid #e0ddd5; }
+  .video-grid-archive { display: grid; grid-template-columns: repeat(2, 1fr); gap: 40px; }
+  .thumb-wrap { position: relative; aspect-ratio: 16/9; border-radius: 10px; overflow: hidden; border: 1px solid #e0ddd5; background: #000; }
   .thumb-wrap img { width: 100%; height: 100%; object-fit: cover; opacity: 0.95; transition: 0.4s; }
+  .play-icon { position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); color: white; font-size: 3rem; opacity: 0; transition: 0.3s; }
+  .info h2 { font-size: 1.5rem; margin-top: 8px; line-height: 1.3; }
   .video-item:hover img { opacity: 0.7; transform: scale(1.03); }
-  @media (max-width: 768px) { .video-archive-grid { grid-template-columns: 1fr; } }
+  .video-item:hover .play-icon { opacity: 1; }
+  @media (max-width: 768px) { .video-grid-archive { grid-template-columns: 1fr; } }
 </style>

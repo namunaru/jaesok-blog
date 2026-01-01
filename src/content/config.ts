@@ -15,7 +15,7 @@ const video = defineCollection({
   schema: z.object({
     title: z.string(),
     pubDate: z.coerce.date(),
-    // 마크다운의 youtube: "주소"를 인식하도록 설정
+    // 사용자님의 md 파일에 적힌 'youtube' 주소를 읽습니다.
     youtube: z.string(), 
     draft: z.boolean().default(false),
   }),
