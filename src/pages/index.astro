@@ -2,11 +2,11 @@
 import BaseLayout from '../layouts/BaseLayout.astro';
 import { getCollection } from 'astro:content';
 
-// 1. 데이터 가져오기 (리뷰와 영상)
+// 1. 데이터 가져오기
 const allReviews = await getCollection('review');
 const allVideos = await getCollection('video');
 
-// 2. 최신순 정렬 및 개수 제한 (메인에는 3개씩만 표시)
+// 2. 데이터 정렬 및 필터링 (최신순 3개씩)
 const reviews = allReviews
   .filter(post => !post.data.draft)
   .sort((a, b) => b.data.pubDate.valueOf() - a.data.pubDate.valueOf())
@@ -19,7 +19,9 @@ const videos = allVideos
 
 <BaseLayout title="Gedsc">
   <section class="hero-cyber">
-    <div class="morph-word">Gedsc</div>
+    <div class="morph-container">
+      <div class="morph-word" data-text="Gedsc">Gedsc</div>
+    </div>
     <p class="hero-sub serif">기록하고, 사유하고, 천천히 공유하는 문학의 흔적</p>
   </section>
 
@@ -29,17 +31,18 @@ const videos = allVideos
         <h2 class="serif">최근의 기록</h2>
         <a href="/review" class="more-link">전체보기 →</a>
       </div>
-      <div class="post-list">
+      <div class="post-list-text">
         {reviews.map((post) => (
-          <article class="post-item">
+          <article class="post-item-text">
             <a href={post.data.link} target="_blank" rel="noopener noreferrer">
-              <div class="thumbnail-wrapper">
-                <img src={post.data.thumbnail} alt={post.data.title} onerror="this.src='/fallback-image.png'" />
-              </div>
               <div class="post-info">
+                <div class="post-meta-top">
+                  <span class="category-text">{post.data.category || 'Review'}</span>
+                  <span class="date-text">{post.data.pubDate.toLocaleDateString('ko-KR')}</span>
+                </div>
                 <h3 class="serif">{post.data.title}</h3>
                 <p class="description">{post.data.description}</p>
-                <span class="date">{post.data.pubDate.toLocaleDateString('ko-KR')}</span>
+                <span class="read-more">네이버 블로그에서 읽기 ↗</span>
               </div>
             </a>
           </article>
@@ -47,58 +50,83 @@ const videos = allVideos
       </div>
     </section>
 
-    <section class="section-block video-section">
+    <section class="section-block">
       <div class="section-header">
         <h2 class="serif">최근 영상</h2>
         <a href="/video" class="more-link">전체보기 →</a>
       </div>
-      <div class="video-grid">
+      <div class="video-grid-text">
         {videos.map((video) => (
-          <a href={`/video/${video.slug}`} class="video-card">
-            <div class="video-thumb">
-              <img src={video.data.thumbnail} alt={video.data.title} />
-              <span class="play-icon">▶</span>
-            </div>
+          <a href={`/video/${video.slug}`} class="video-card-text">
+            <div class="video-icon"><span>▶</span></div>
             <h3 class="serif">{video.data.title}</h3>
+            <span class="view-video">영상 보기</span>
           </a>
         ))}
       </div>
     </section>
   </main>
+
+  <footer class="site-footer">
+    <p>© 2026 gedsc · 세계문학 기록실</p>
+  </footer>
 </BaseLayout>
 
 <style>
-  .container { max-width: 900px; margin: 0 auto; padding: 0 20px; }
-  
-  /* 히어로 디자인 최적화 */
-  .hero-cyber { padding: 100px 0 60px; text-align: center; }
-  .morph-word { font-size: 4.5rem; font-weight: 800; margin-bottom: 10px; letter-spacing: -2px; }
-  .hero-sub { color: #b3934d; font-size: 1.1rem; }
+  .container { max-width: 800px; margin: 0 auto; padding: 0 20px; }
 
-  .section-block { margin-bottom: 80px; }
-  .section-header { display: flex; justify-content: space-between; align-items: flex-end; margin-bottom: 30px; border-bottom: 1px solid #eee; padding-bottom: 10px; }
-  .more-link { font-size: 0.9rem; color: #999; text-decoration: none; }
+  /* --- 히어로 & 동적 효과 --- */
+  .hero-cyber { padding: 140px 0 100px; text-align: center; }
+  .morph-container { position: relative; display: inline-block; margin-bottom: 20px; }
+  .morph-word {
+    font-size: 6rem; font-weight: 900; letter-spacing: -3px; color: #1a1a1a;
+    animation: morph-float 6s ease-in-out infinite;
+  }
+  .morph-word::before {
+    content: attr(data-text); position: absolute; top: 0; left: 0;
+    width: 100%; height: 100%; color: #b3934d; opacity: 0.2; z-index: -1;
+    animation: glitch-offset 4s infinite linear alternate-reverse;
+  }
+  @keyframes morph-float {
+    0%, 100% { transform: translateY(0); }
+    50% { transform: translateY(-10px); }
+  }
+  @keyframes glitch-offset {
+    0% { transform: translate(0); }
+    100% { transform: translate(4px, -4px); }
+  }
+  .hero-sub { color: #b3934d; font-size: 1.1rem; opacity: 0.8; }
 
-  /* 리뷰 리스트 스타일 */
-  .post-list { display: flex; flex-direction: column; gap: 40px; }
-  .post-item a { display: flex; gap: 25px; text-decoration: none; color: inherit; }
-  .thumbnail-wrapper { flex: 0 0 240px; height: 140px; border-radius: 6px; overflow: hidden; background: #f5f5f5; }
-  .thumbnail-wrapper img { width: 100%; height: 100%; object-fit: cover; }
-  .post-info h3 { margin: 0 0 10px; font-size: 1.4rem; line-height: 1.4; }
-  .description { font-size: 0.95rem; color: #666; margin-bottom: 10px; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
-  .date { font-size: 0.85rem; color: #bbb; }
+  /* --- 공통 섹션 스타일 --- */
+  .section-block { margin-bottom: 120px; }
+  .section-header { display: flex; justify-content: space-between; align-items: flex-end; margin-bottom: 40px; border-bottom: 1px solid #eee; padding-bottom: 15px; }
+  .more-link { font-size: 0.85rem; color: #b3934d; text-decoration: none; text-transform: uppercase; letter-spacing: 1px; }
 
-  /* 영상 그리드 스타일 */
-  .video-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 20px; }
-  .video-card { text-decoration: none; color: inherit; }
-  .video-thumb { position: relative; aspect-ratio: 16/9; border-radius: 6px; overflow: hidden; margin-bottom: 10px; }
-  .video-thumb img { width: 100%; height: 100%; object-fit: cover; }
-  .play-icon { position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); color: white; font-size: 2rem; opacity: 0.8; }
-  .video-card h3 { font-size: 1rem; line-height: 1.4; }
+  /* --- 북리뷰 텍스트 레이아웃 --- */
+  .post-list-text { display: flex; flex-direction: column; gap: 60px; }
+  .post-item-text a { text-decoration: none; color: inherit; display: block; transition: 0.3s; }
+  .post-meta-top { display: flex; gap: 15px; font-size: 0.8rem; margin-bottom: 12px; color: #999; }
+  .category-text { color: #b3934d; font-weight: 600; text-transform: uppercase; }
+  .post-item-text h3 { font-size: 1.8rem; margin-bottom: 15px; line-height: 1.3; color: #1a1a1a; }
+  .description { font-size: 1rem; color: #666; line-height: 1.8; margin-bottom: 15px; }
+  .read-more { font-size: 0.85rem; color: #b3934d; font-weight: 500; }
+  .post-item-text:hover { transform: translateY(-5px); }
+
+  /* --- 영상 텍스트 그리드 --- */
+  .video-grid-text { display: grid; grid-template-columns: repeat(3, 1fr); gap: 30px; }
+  .video-card-text { 
+    text-decoration: none; color: inherit; padding: 30px 20px; border: 1px solid #f0f0f0; 
+    border-radius: 12px; transition: 0.3s; text-align: center; background: #fff;
+  }
+  .video-icon { font-size: 1.5rem; color: #b3934d; margin-bottom: 15px; }
+  .video-card-text h3 { font-size: 1.1rem; line-height: 1.5; margin-bottom: 15px; min-height: 3em; }
+  .view-video { font-size: 0.75rem; color: #bbb; text-transform: uppercase; letter-spacing: 1px; }
+  .video-card-text:hover { border-color: #b3934d; box-shadow: 0 10px 30px rgba(179, 147, 77, 0.1); }
+
+  .site-footer { padding: 80px 0; text-align: center; border-top: 1px solid #f9f9f9; color: #ccc; font-size: 0.85rem; }
 
   @media (max-width: 768px) {
-    .post-item a { flex-direction: column; }
-    .thumbnail-wrapper { width: 100%; }
-    .video-grid { grid-template-columns: 1fr; }
+    .morph-word { font-size: 4rem; }
+    .video-grid-text { grid-template-columns: 1fr; }
   }
 </style>

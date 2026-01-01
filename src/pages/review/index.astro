@@ -2,32 +2,45 @@
 import BaseLayout from '../../layouts/BaseLayout.astro';
 import { getCollection } from 'astro:content';
 
-// 마크다운 파일들 가져오기
-const posts = await getCollection('review');
-const sortedPosts = posts
+// 1. 마크다운 파일들 가져오기
+const allPosts = await getCollection('review');
+
+// 2. 초안이 아닌 글들을 최신순으로 정렬
+const sortedPosts = allPosts
   .filter(post => !post.data.draft)
   .sort((a, b) => b.data.pubDate.valueOf() - a.data.pubDate.valueOf());
 ---
 
 <BaseLayout title="북리뷰 | Gedsc">
   <section class="page-header">
-    <h1 class="serif">북리뷰</h1>
+    <h1 class="serif">북리뷰 Archive</h1>
     <p class="hero-sub">기록하고, 사유하고, 천천히 공유하는 문학의 흔적</p>
   </section>
 
   <main class="container">
-    <div class="post-list">
+    <div class="post-list-text">
       {sortedPosts.length > 0 ? (
         sortedPosts.map((post) => (
-          <article class="post-item">
+          <article class="post-item-text">
+            {/* 클릭 시 네이버 블로그 링크로 직결 */}
             <a href={post.data.link} target="_blank" rel="noopener noreferrer">
-              <div class="thumbnail-wrapper">
-                <img src={post.data.thumbnail} alt={post.data.title} />
-              </div>
               <div class="post-info">
-                <h3 class="serif">{post.data.title}</h3>
+                <div class="post-meta-top">
+                  <span class="category-text">{post.data.category || 'World Literature'}</span>
+                  <span class="date-text">
+                    {post.data.pubDate.toLocaleDateString('ko-KR', { year: 'numeric', month: 'long', day: 'numeric' })}
+                  </span>
+                </div>
+                <h2 class="serif">{post.data.title}</h2>
                 <p class="description">{post.data.description}</p>
-                <span class="date">{post.data.pubDate.toLocaleDateString('ko-KR')}</span>
+                <div class="post-footer">
+                  <span class="read-link">전체 내용 읽기 ↗</span>
+                  {post.data.tags && (
+                    <div class="tags">
+                      {post.data.tags.map(tag => <span class="tag">#{tag}</span>)}
+                    </div>
+                  )}
+                </div>
               </div>
             </a>
           </article>
@@ -37,24 +50,131 @@ const sortedPosts = posts
       )}
     </div>
   </main>
+
+  <footer class="site-footer">
+    <p>© 2026 gedsc · 세계문학 기록실</p>
+  </footer>
 </BaseLayout>
 
 <style>
-  .container { max-width: 900px; margin: 0 auto; padding: 60px 20px; }
-  .page-header { text-align: center; padding: 80px 0 40px; }
-  .page-header h1 { font-size: 2.5rem; margin-bottom: 15px; }
-  .hero-sub { color: #b3934d; font-size: 1rem; }
+  /* 기본 컨테이너 설정 */
+  .container {
+    max-width: 800px;
+    margin: 0 auto;
+    padding: 60px 20px 120px;
+  }
+
+  /* 페이지 상단 타이틀 스타일 */
+  .page-header {
+    text-align: center;
+    padding: 100px 0 60px;
+    background: linear-gradient(to bottom, #fffaf0, #ffffff);
+  }
+  .page-header h1 {
+    font-size: 2.8rem;
+    margin-bottom: 15px;
+    color: #1a1a1a;
+  }
+  .hero-sub {
+    color: #b3934d; /* Gedsc 시그니처 골드 컬러 */
+    font-size: 1.1rem;
+    opacity: 0.8;
+  }
+
+  /* 텍스트 중심 리스트 레이아웃 */
+  .post-list-text {
+    display: flex;
+    flex-direction: column;
+    gap: 80px;
+  }
+  .post-item-text a {
+    text-decoration: none;
+    color: inherit;
+    display: block;
+    transition: all 0.3s ease;
+  }
   
-  .post-list { display: flex; flex-direction: column; gap: 50px; }
-  .post-item a { display: flex; gap: 30px; text-decoration: none; color: inherit; }
-  .thumbnail-wrapper { flex: 0 0 280px; height: 160px; border-radius: 8px; overflow: hidden; }
-  .thumbnail-wrapper img { width: 100%; height: 100%; object-fit: cover; }
-  .post-info h3 { font-size: 1.6rem; margin-bottom: 12px; }
-  .description { color: #666; line-height: 1.7; margin-bottom: 15px; }
-  .empty-msg { text-align: center; color: #999; padding: 100px 0; }
-  
+  /* 메타 정보 (카테고리, 날짜) */
+  .post-meta-top {
+    display: flex;
+    gap: 15px;
+    font-size: 0.85rem;
+    margin-bottom: 15px;
+    color: #999;
+    letter-spacing: 0.5px;
+  }
+  .category-text {
+    color: #b3934d;
+    font-weight: 600;
+    text-transform: uppercase;
+  }
+
+  /* 제목 및 본문 요약 */
+  .post-item-text h2 {
+    font-size: 2rem;
+    margin-bottom: 18px;
+    line-height: 1.3;
+    color: #1a1a1a;
+  }
+  .description {
+    font-size: 1.05rem;
+    color: #555;
+    line-height: 1.8;
+    margin-bottom: 20px;
+    /* 긴 설명글도 깔끔하게 정돈 */
+    display: -webkit-box;
+    -webkit-line-clamp: 3;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+  }
+
+  /* 하단 링크 및 태그 */
+  .post-footer {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding-top: 15px;
+    border-top: 1px solid #f5f5f5;
+  }
+  .read-link {
+    font-size: 0.9rem;
+    color: #b3934d;
+    font-weight: 500;
+  }
+  .tags {
+    display: flex;
+    gap: 10px;
+    font-size: 0.8rem;
+    color: #ccc;
+  }
+
+  /* 마우스 호버 효과 */
+  .post-item-text:hover {
+    transform: translateY(-5px);
+  }
+  .post-item-text:hover h2 {
+    color: #b3934d;
+  }
+
+  /* 푸터 스타일 */
+  .site-footer {
+    padding: 80px 0;
+    text-align: center;
+    border-top: 1px solid #eee;
+    color: #bbb;
+    font-size: 0.85rem;
+  }
+
+  .empty-msg {
+    text-align: center;
+    color: #999;
+    padding: 100px 0;
+  }
+
+  /* 모바일 최적화 */
   @media (max-width: 768px) {
-    .post-item a { flex-direction: column; }
-    .thumbnail-wrapper { width: 100%; }
+    .page-header h1 { font-size: 2rem; }
+    .post-item-text h2 { font-size: 1.6rem; }
+    .post-footer { flex-direction: column; align-items: flex-start; gap: 10px; }
   }
 </style>
