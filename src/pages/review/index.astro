@@ -3,26 +3,20 @@ import BaseLayout from '../../layouts/BaseLayout.astro';
 import { getCollection } from 'astro:content';
 
 const allPosts = await getCollection('review');
-const sortedPosts = allPosts
-  .filter(post => !post.data.draft)
-  .sort((a, b) => b.data.pubDate.valueOf() - a.data.pubDate.valueOf());
+const sortedPosts = allPosts.filter(post => !post.data.draft).sort((a, b) => b.data.pubDate.valueOf() - a.data.pubDate.valueOf());
 ---
 
 <BaseLayout title="북리뷰 Archive | Gedsc">
   <div class="theme-beige">
     <section class="page-header-simple">
-      <h1 class="serif dark-text">북리뷰 Archive</h1>
+      <h1 class="serif">북리뷰 Archive</h1>
     </section>
-
     <main class="container">
-      <div class="archive-list-slim">
+      <div class="archive-list">
         {sortedPosts.map((post) => (
-          <article class="archive-item-slim">
-            <a href={post.data.link} target="_blank" rel="noopener noreferrer">
-              <div class="meta">
-                <span class="cat">{post.data.category || 'Literature'}</span>
-                <span class="date">{post.data.pubDate.toLocaleDateString('ko-KR')}</span>
-              </div>
+          <article class="archive-item">
+            <a href={post.data.link} target="_blank">
+              <span class="cat">{post.data.category || 'Review'}</span>
               <h2 class="serif">{post.data.title}</h2>
               <p class="desc">{post.data.description}</p>
             </a>
@@ -30,30 +24,16 @@ const sortedPosts = allPosts
         ))}
       </div>
     </main>
-    <footer class="site-footer">
-      <p>© 2026 gedsc · 세계문학 기록실</p>
-    </footer>
   </div>
 </BaseLayout>
 
 <style>
-  :root { --bg-beige: #f9f7f2; --gold-main: #b3934d; --text-black: #1a1a1a; --border-tan: #e0ddd5; }
-  .theme-beige { background: var(--bg-beige); color: var(--text-black); min-height: 100vh; }
-  .container { max-width: 800px; margin: 0 auto; padding: 40px 20px 100px; }
-  .dark-text { color: var(--text-black); }
-
-  /* 심플해진 페이지 헤더 */
-  .page-header-simple { text-align: center; padding: 80px 0 50px; border-bottom: 1px solid var(--border-tan); margin-bottom: 50px; }
-  .page-header-simple h1 { font-size: 2.5rem; margin: 0; }
-
-  .archive-list-slim { display: flex; flex-direction: column; gap: 30px; }
-  .archive-item-slim a { text-decoration: none; color: inherit; display: block; padding: 30px; background: #fff; border-radius: 8px; transition: 0.3s; box-shadow: 0 2px 10px rgba(0,0,0,0.02); border: 1px solid transparent; }
-  .meta { font-size: 0.85rem; color: #999; margin-bottom: 12px; display: flex; gap: 15px; }
-  .cat { color: var(--gold-main); font-weight: 700; }
-  .archive-item-slim h2 { font-size: 1.8rem; margin-bottom: 15px; transition: 0.3s; line-height: 1.3; }
-  .desc { font-size: 1rem; color: #666; line-height: 1.7; }
-  
-  .archive-item-slim:hover a { transform: translateY(-5px); border-color: var(--gold-main); }
-  .archive-item-slim:hover h2 { color: var(--gold-main); }
-  .site-footer { padding: 80px 0; text-align: center; color: #bbb; border-top: 1px solid var(--border-tan); }
+  .theme-beige { background: #f9f7f2; min-height: 100vh; padding-bottom: 100px; }
+  .page-header-simple { text-align: center; padding: 80px 0 50px; border-bottom: 1px solid #e0ddd5; margin-bottom: 50px; }
+  .container { max-width: 800px; margin: 0 auto; padding: 0 20px; }
+  .archive-list { display: flex; flex-direction: column; gap: 40px; }
+  .archive-item a { text-decoration: none; color: inherit; padding: 30px; background: #fff; border-radius: 8px; display: block; box-shadow: 0 2px 10px rgba(0,0,0,0.02); }
+  .cat { color: #b3934d; font-weight: bold; font-size: 0.9rem; }
+  .archive-item h2 { font-size: 1.8rem; margin: 10px 0; transition: 0.3s; }
+  .archive-item:hover h2 { color: #b3934d; }
 </style>
