@@ -9,42 +9,27 @@ const sortedPosts = allPosts
 ---
 
 <BaseLayout title="북리뷰 Archive | Gedsc">
-  <div class="theme-dark">
+  <div class="theme-beige">
     <section class="page-header">
-      <h1 class="serif gold-text">북리뷰 Archive</h1>
+      <h1 class="serif dark-text">북리뷰 Archive</h1>
       <p class="hero-sub serif">기록하고, 사유하고, 천천히 공유하는 문학의 흔적</p>
     </section>
 
     <main class="container">
-      <div class="post-list-text">
-        {sortedPosts.length > 0 ? (
-          sortedPosts.map((post) => (
-            <article class="post-item-text fade-up">
-              <a href={post.data.link} target="_blank" rel="noopener noreferrer">
-                <div class="post-info">
-                  <div class="post-meta-top">
-                    <span class="category-text">{post.data.category || 'World Literature'}</span>
-                    <span class="date-text">
-                      {post.data.pubDate.toLocaleDateString('ko-KR', { year: 'numeric', month: 'long', day: 'numeric' })}
-                    </span>
-                  </div>
-                  <h2 class="serif title-highlight">{post.data.title}</h2>
-                  <p class="description">{post.data.description}</p>
-                  <div class="post-footer">
-                    <span class="read-link">전체 내용 읽기 ↗</span>
-                    {post.data.tags && (
-                      <div class="tags">
-                        {post.data.tags.map(tag => <span class="tag">#{tag}</span>)}
-                      </div>
-                    )}
-                  </div>
-                </div>
-              </a>
-            </article>
-          ))
-        ) : (
-          <p class="empty-msg">아직 기록된 리뷰가 없습니다.</p>
-        )}
+      <div class="archive-list">
+        {sortedPosts.map((post) => (
+          <article class="archive-item">
+            <a href={post.data.link} target="_blank" rel="noopener noreferrer">
+              <div class="meta">
+                <span class="cat">{post.data.category || 'Literature'}</span>
+                <span class="dot">·</span>
+                <span class="date">{post.data.pubDate.toLocaleDateString('ko-KR')}</span>
+              </div>
+              <h2 class="serif">{post.data.title}</h2>
+              <p class="desc">{post.data.description}</p>
+            </a>
+          </article>
+        ))}
       </div>
     </main>
 
@@ -55,49 +40,17 @@ const sortedPosts = allPosts
 </BaseLayout>
 
 <style>
-  /* 메인 페이지와 동일한 블랙&골드 변수 사용 */
-  :root {
-    --c-bg-dark: #111111; --c-bg-card: #1a1a1a; --c-text-light: #e0e0e0;
-    --c-gold: #D4AF37; --c-gold-hover: #F2D06B; --c-text-muted: #888888;
-  }
-  .theme-dark { background-color: var(--c-bg-dark); color: var(--c-text-light); min-height: 100vh; }
-  .container { max-width: 800px; margin: 0 auto; padding: 60px 20px 120px; }
-  .gold-text { color: var(--c-gold) !important; }
+  .theme-beige { background: #f9f7f2; color: #1a1a1a; min-height: 100vh; }
+  .container { max-width: 800px; margin: 0 auto; padding: 60px 20px; }
+  .page-header { text-align: center; padding: 100px 0 60px; }
+  .page-header h1 { font-size: 2.5rem; margin-bottom: 10px; }
+  .hero-sub { color: #b3934d; font-size: 1.1rem; }
 
-  .page-header { text-align: center; padding: 120px 0 80px; background: linear-gradient(to bottom, #222, var(--c-bg-dark)); }
-  .page-header h1 { font-size: 3rem; margin-bottom: 20px; }
-  .hero-sub { color: var(--c-gold); font-size: 1.1rem; opacity: 0.8; }
-
-  .post-list-text { display: flex; flex-direction: column; gap: 60px; }
-  .post-item-text a {
-    text-decoration: none; color: inherit; display: block; padding: 40px;
-    background: var(--c-bg-card); border: 1px solid #333; border-radius: 4px; transition: all 0.4s ease;
-  }
-  .post-meta-top { display: flex; gap: 15px; font-size: 0.9rem; margin-bottom: 20px; color: var(--c-text-muted); }
-  .category-text { color: var(--c-gold); font-weight: 600; text-transform: uppercase; letter-spacing: 1px; }
-  .post-item-text h2 { font-size: 2.2rem; margin-bottom: 25px; line-height: 1.3; color: var(--c-text-light); transition: 0.3s; }
-  .description { font-size: 1.05rem; color: #bbb; line-height: 1.8; margin-bottom: 30px; display: -webkit-box; -webkit-line-clamp: 3; -webkit-box-orient: vertical; overflow: hidden; }
-
-  .post-footer { display: flex; justify-content: space-between; align-items: center; padding-top: 20px; border-top: 1px solid #333; }
-  .read-link { font-size: 0.95rem; color: var(--c-gold); font-weight: 500; transition: 0.3s; }
-  .tags { display: flex; gap: 10px; font-size: 0.85rem; color: var(--c-text-muted); }
-  .tag { background: #2a2a2a; padding: 4px 10px; border-radius: 12px; }
-
-  /* 호버 효과 */
-  .post-item-text:hover a { transform: translateY(-7px); border-color: var(--c-gold); box-shadow: 0 10px 30px -10px rgba(212, 175, 55, 0.2); }
-  .post-item-text:hover h2 { color: var(--c-gold-hover); }
-  .post-item-text:hover .read-link { letter-spacing: 1px; }
-
-  .fade-up { opacity: 0; transform: translateY(30px); animation: fadeUpAnim 0.8s ease-out forwards; }
-  @keyframes fadeUpAnim { to { opacity: 1; transform: translateY(0); } }
-
-  .site-footer { padding: 80px 0; text-align: center; border-top: 1px solid #333; color: var(--c-text-muted); font-size: 0.85rem; }
-  .empty-msg { text-align: center; color: var(--c-text-muted); padding: 100px 0; }
-
-  @media (max-width: 768px) {
-    .page-header h1 { font-size: 2.2rem; }
-    .post-item-text h2 { font-size: 1.8rem; }
-    .post-item-text a { padding: 25px; }
-    .post-footer { flex-direction: column; align-items: flex-start; gap: 15px; }
-  }
+  .archive-list { display: flex; flex-direction: column; gap: 60px; }
+  .archive-item a { text-decoration: none; color: inherit; display: block; }
+  .meta { font-size: 0.85rem; color: #999; margin-bottom: 12px; }
+  .cat { color: #b3934d; font-weight: 700; }
+  .archive-item h2 { font-size: 1.8rem; margin-bottom: 15px; transition: 0.3s; }
+  .desc { font-size: 1rem; color: #666; line-height: 1.8; }
+  .archive-item:hover h2 { color: #b3934d; }
 </style>

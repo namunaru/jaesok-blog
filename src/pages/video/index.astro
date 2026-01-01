@@ -2,30 +2,35 @@
 import BaseLayout from '../../layouts/BaseLayout.astro';
 import { getCollection } from 'astro:content';
 
+// 1. 영상 데이터 가져오기 및 정렬
 const videos = await getCollection('video');
 const sortedVideos = videos.sort((a, b) => b.data.pubDate.valueOf() - a.data.pubDate.valueOf());
 ---
 
-<BaseLayout title="영상리뷰 | Gedsc">
-  <div class="theme-black-gold">
+<BaseLayout title="영상리뷰 Archive | Gedsc">
+  <div class="theme-beige">
+    
     <section class="page-header">
-      <h1 class="serif gold-text">영상리뷰 Archive</h1>
+      <h1 class="serif dark-text">영상리뷰 Archive</h1>
       <p class="hero-sub serif">시각과 청각으로 만나는 문학의 세계</p>
     </section>
 
     <main class="container">
-      <div class="video-full-grid">
+      <div class="video-archive-grid">
         {sortedVideos.map((video) => (
-          <a href={`/video/${video.slug}`} class="video-card-full">
-            <div class="thumb-box">
-              <img src={video.data.thumbnail} alt={video.data.title} />
-              <div class="play-overlay"><span>VIEW VIDEO</span></div>
-            </div>
-            <div class="video-info">
-              <span class="date">{video.data.pubDate.toLocaleDateString('ko-KR')}</span>
-              <h2 class="serif">{video.data.title}</h2>
-            </div>
-          </a>
+          <article class="video-archive-item">
+            <a href={`/video/${video.slug}`} class="video-link">
+              <div class="thumb-wrapper">
+                {/* 유튜브 서버에서 직접 가져오는 고화질 썸네일 */}
+                <img src={video.data.thumbnail} alt={video.data.title} loading="lazy" />
+                <div class="play-indicator">▶</div>
+              </div>
+              <div class="video-content">
+                <span class="video-date">{video.data.pubDate.toLocaleDateString('ko-KR')}</span>
+                <h2 class="serif">{video.data.title}</h2>
+              </div>
+            </a>
+          </article>
         ))}
       </div>
     </main>
@@ -37,39 +42,58 @@ const sortedVideos = videos.sort((a, b) => b.data.pubDate.valueOf() - a.data.pub
 </BaseLayout>
 
 <style>
-  :root { --bg-black: #0a0a0a; --gold-main: #D4AF37; --text-white: #f0f0f0; }
-  .theme-black-gold { background: var(--bg-black); color: var(--text-white); min-height: 100vh; }
-  .container { max-width: 1000px; margin: 0 auto; padding: 60px 20px 120px; }
-  .gold-text { color: var(--gold-main) !important; }
-
-  .page-header { text-align: center; padding: 120px 0 60px; background: linear-gradient(to bottom, #151515, var(--bg-black)); }
-  .page-header h1 { font-size: 3rem; margin-bottom: 20px; }
-  .hero-sub { color: var(--gold-main); font-size: 1.1rem; opacity: 0.8; letter-spacing: 1px; }
-
-  .video-full-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 40px; }
-  .video-card-full { text-decoration: none; color: inherit; }
-  .thumb-box { position: relative; aspect-ratio: 16/9; border-radius: 12px; overflow: hidden; background: #000; border: 1px solid #333; }
-  .thumb-box img { width: 100%; height: 100%; object-fit: cover; opacity: 0.9; transition: 0.5s; }
-  
-  .play-overlay {
-    position: absolute; top: 0; left: 0; width: 100%; height: 100%;
-    display: flex; align-items: center; justify-content: center;
-    background: rgba(0,0,0,0.6); color: var(--gold-main); font-weight: bold;
-    letter-spacing: 2px; opacity: 0; transition: 0.4s;
+  :root {
+    --bg-beige: #f9f7f2; /* 원래의 베이지 배경색 */
+    --gold-deep: #b3934d;
+    --text-dark: #1a1a1a;
+    --border-light: #e0ddd5;
   }
 
-  .video-info { padding: 20px 5px; }
-  .video-info .date { font-size: 0.85rem; color: #666; margin-bottom: 10px; display: block; }
-  .video-info h2 { font-size: 1.6rem; line-height: 1.4; transition: 0.3s; }
+  .theme-beige { background: var(--bg-beige); color: var(--text-dark); min-height: 100vh; }
+  .container { max-width: 1000px; margin: 0 auto; padding: 0 20px 100px; }
+  .dark-text { color: var(--text-dark); }
 
-  .video-card-full:hover .thumb-box img { transform: scale(1.05); opacity: 0.5; }
-  .video-card-full:hover .play-overlay { opacity: 1; }
-  .video-card-full:hover h2 { color: var(--gold-main); }
+  /* 페이지 상단 헤더 */
+  .page-header { text-align: center; padding: 120px 0 70px; }
+  .page-header h1 { font-size: 2.8rem; margin-bottom: 15px; }
+  .hero-sub { color: var(--gold-deep); font-size: 1.1rem; opacity: 0.8; }
 
-  .site-footer { padding: 80px 0; text-align: center; border-top: 1px solid #222; color: #444; }
+  /* 영상 아카이브 그리드 설정 */
+  .video-archive-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 40px; }
+  .video-archive-item { transition: transform 0.3s ease; }
+  
+  .video-link { text-decoration: none; color: inherit; display: block; }
+  
+  /* 썸네일 박스 스타일 */
+  .thumb-wrapper {
+    position: relative; aspect-ratio: 16/9; border-radius: 10px; overflow: hidden;
+    background: #000; box-shadow: 0 5px 20px rgba(0,0,0,0.08); border: 1px solid var(--border-light);
+  }
+  .thumb-wrapper img { width: 100%; height: 100%; object-fit: cover; transition: 0.5s; opacity: 0.95; }
+  
+  /* 플레이 버튼 오버레이 */
+  .play-indicator {
+    position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%);
+    font-size: 3rem; color: white; opacity: 0; transition: 0.4s; z-index: 2;
+  }
 
+  /* 영상 정보 텍스트 */
+  .video-content { padding: 20px 5px; }
+  .video-date { font-size: 0.85rem; color: #999; margin-bottom: 8px; display: block; }
+  .video-content h2 { font-size: 1.6rem; line-height: 1.4; color: var(--text-dark); transition: 0.3s; }
+
+  /* 호버 효과 */
+  .video-archive-item:hover { transform: translateY(-8px); }
+  .video-archive-item:hover img { opacity: 0.6; transform: scale(1.05); }
+  .video-archive-item:hover .play-indicator { opacity: 0.8; }
+  .video-archive-item:hover h2 { color: var(--gold-deep); }
+
+  .site-footer { padding: 80px 0; text-align: center; border-top: 1px solid var(--border-light); color: #bbb; font-size: 0.85rem; }
+
+  /* 모바일 대응 */
   @media (max-width: 768px) {
-    .video-full-grid { grid-template-columns: 1fr; }
+    .video-archive-grid { grid-template-columns: 1fr; }
     .page-header h1 { font-size: 2.2rem; }
+    .video-content h2 { font-size: 1.4rem; }
   }
 </style>

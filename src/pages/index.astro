@@ -16,10 +16,12 @@ const videos = allVideos
 ---
 
 <BaseLayout title="Gedsc">
-  <div class="theme-black-gold">
+  <div class="theme-beige">
+    
     <section class="hero-cyber">
-      <div class="morph-container">
-        <div class="morph-word glitch" data-text="Gedsc">Gedsc</div>
+      <div class="logo-container">
+        <h1 class="morph-logo" data-text="Gedsc">Gedsc</h1>
+        <div class="glitch-line"></div>
       </div>
       <p class="hero-sub serif">기록하고, 사유하고, 천천히 공유하는 문학의 흔적</p>
     </section>
@@ -27,21 +29,19 @@ const videos = allVideos
     <main class="container">
       <section class="section-block">
         <div class="section-header">
-          <h2 class="serif gold-text">최근 리뷰</h2>
+          <h2 class="serif dark-text">최근 리뷰</h2>
           <a href="/review" class="more-link">전체보기 →</a>
         </div>
-        <div class="post-list-minimal">
+        <div class="post-list-slim">
           {reviews.map((post) => (
-            <article class="post-item-minimal">
+            <article class="post-item-slim">
               <a href={post.data.link} target="_blank" rel="noopener noreferrer">
-                <div class="post-content">
-                  <div class="post-meta">
-                    <span class="category">{post.data.category || 'Literature'}</span>
-                    <span class="date">{post.data.pubDate.toLocaleDateString('ko-KR')}</span>
-                  </div>
-                  <h3 class="serif">{post.data.title}</h3>
+                <div class="post-meta">
+                  <span class="category">{post.data.category || 'Review'}</span>
+                  <span class="date">{post.data.pubDate.toLocaleDateString('ko-KR')}</span>
                 </div>
-                <div class="arrow-icon">→</div>
+                <h3 class="serif">{post.data.title}</h3>
+                <div class="hover-arrow">→</div>
               </a>
             </article>
           ))}
@@ -50,17 +50,17 @@ const videos = allVideos
 
       <section class="section-block">
         <div class="section-header">
-          <h2 class="serif gold-text">최근 영상</h2>
+          <h2 class="serif dark-text">최근 영상</h2>
           <a href="/video" class="more-link">전체보기 →</a>
         </div>
         <div class="video-grid">
           {videos.map((video) => (
             <a href={`/video/${video.slug}`} class="video-card">
-              <div class="video-thumb-container">
+              <div class="video-thumb-box">
                 <img src={video.data.thumbnail} alt={video.data.title} />
-                <div class="play-btn">▶</div>
+                <div class="play-icon">▶</div>
               </div>
-              <h3 class="serif">{video.data.title}</h3>
+              <h3 class="serif video-title">{video.data.title}</h3>
             </a>
           ))}
         </div>
@@ -75,84 +75,83 @@ const videos = allVideos
 
 <style>
   :root {
-    --bg-black: #0a0a0a;
-    --card-black: #151515;
-    --gold-main: #D4AF37;
-    --gold-bright: #FFD700;
-    --text-white: #f0f0f0;
+    --bg-beige: #f9f7f2; /* 원래의 따뜻한 베이지 색상 */
+    --gold-deep: #b3934d;
+    --text-dark: #1a1a1a;
+    --card-white: #ffffff;
   }
 
-  .theme-black-gold { background: var(--bg-black); color: var(--text-white); min-height: 100vh; }
-  .container { max-width: 900px; margin: 0 auto; padding: 0 20px; }
-  .gold-text { color: var(--gold-main) !important; }
+  .theme-beige { background: var(--bg-beige); color: var(--text-dark); min-height: 100vh; }
+  .container { max-width: 850px; margin: 0 auto; padding: 0 20px; }
+  .dark-text { color: var(--text-dark); }
 
-  /* 히어로 섹션 & 글리치 애니메이션 */
-  .hero-cyber { padding: 160px 0 100px; text-align: center; }
-  .morph-word {
-    font-size: 7rem; font-weight: 900; letter-spacing: -4px;
-    position: relative; display: inline-block;
-    animation: float 5s ease-in-out infinite;
+  /* --- 블랙 & 골드 사이버틱 로고 효과 --- */
+  .hero-cyber { padding: 140px 0 90px; text-align: center; }
+  .logo-container { position: relative; display: inline-block; margin-bottom: 20px; }
+  
+  .morph-logo {
+    font-size: 6.5rem; font-weight: 900; letter-spacing: -4px;
+    color: var(--text-dark); /* 기본 블랙 */
+    position: relative;
+    animation: morph-float 6s ease-in-out infinite;
   }
-  .morph-word::before, .morph-word::after {
-    content: attr(data-text); position: absolute; top: 0; left: 0; width: 100%; height: 100%; opacity: 0.7;
+  /* 골드 글리치 잔상 */
+  .morph-logo::before, .morph-logo::after {
+    content: attr(data-text); position: absolute; top: 0; left: 0; width: 100%; height: 100%;
+    z-index: -1; opacity: 0.7;
   }
-  .morph-word::before { color: var(--gold-main); z-index: -1; animation: glitch 3s infinite; }
-  .morph-word::after { color: #ff0000; z-index: -2; animation: glitch 2s infinite reverse; opacity: 0.3; }
+  .morph-logo::before { color: var(--gold-deep); animation: glitch-gold 4s infinite linear alternate-reverse; }
+  .morph-logo::after { color: #333; animation: glitch-black 2s infinite linear alternate; opacity: 0.3; }
 
-  @keyframes float { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-15px); } }
-  @keyframes glitch {
+  @keyframes morph-float { 0%, 100% { transform: translateY(0) scale(1); } 50% { transform: translateY(-10px) scale(1.02); } }
+  @keyframes glitch-gold {
     0% { transform: translate(0); }
-    20% { transform: translate(-3px, 2px); }
-    40% { transform: translate(-3px, -2px); }
-    60% { transform: translate(3px, 2px); }
-    80% { transform: translate(3px, -2px); }
+    20% { transform: translate(-4px, 2px); clip-path: inset(10% 0 40% 0); }
+    80% { transform: translate(4px, -2px); clip-path: inset(50% 0 10% 0); }
     100% { transform: translate(0); }
   }
-  .hero-sub { color: var(--gold-main); font-size: 1.2rem; margin-top: 15px; letter-spacing: 2px; }
+  @keyframes glitch-black { 0% { opacity: 0; } 50% { opacity: 0.2; transform: skewX(10deg); } 100% { opacity: 0; } }
 
-  /* 최근 리뷰: 미니멀 레이아웃 */
-  .section-block { margin-bottom: 120px; }
-  .section-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 40px; border-bottom: 1px solid #333; padding-bottom: 15px; }
-  .more-link { color: var(--gold-main); text-decoration: none; font-size: 0.9rem; }
+  .hero-sub { color: var(--gold-deep); font-size: 1.15rem; margin-top: 10px; opacity: 0.9; }
 
-  .post-list-minimal { display: flex; flex-direction: column; gap: 20px; }
-  .post-item-minimal a {
-    display: flex; justify-content: space-between; align-items: center;
-    padding: 30px; background: var(--card-black); border-radius: 4px;
-    text-decoration: none; color: inherit; transition: 0.4s; border: 1px solid #222;
+  /* --- 최근 리뷰 슬림 레이아웃 --- */
+  .section-block { margin-bottom: 100px; }
+  .section-header { display: flex; justify-content: space-between; align-items: flex-end; margin-bottom: 30px; border-bottom: 1px solid #e0ddd5; padding-bottom: 12px; }
+  .more-link { font-size: 0.85rem; color: var(--gold-deep); text-decoration: none; font-weight: 500; }
+
+  .post-list-slim { display: flex; flex-direction: column; gap: 15px; }
+  .post-item-slim a {
+    display: flex; align-items: center; justify-content: space-between;
+    padding: 18px 25px; background: var(--card-white); border-radius: 6px;
+    text-decoration: none; color: inherit; transition: 0.3s;
+    box-shadow: 0 2px 10px rgba(0,0,0,0.03); border: 1px solid transparent;
   }
-  .post-item-minimal h3 { font-size: 1.8rem; margin-top: 10px; transition: 0.3s; }
-  .post-meta { font-size: 0.85rem; color: #888; display: flex; gap: 15px; }
-  .category { color: var(--gold-main); font-weight: bold; }
-  .arrow-icon { font-size: 1.5rem; color: #444; transition: 0.3s; }
-  
-  .post-item-minimal:hover a { border-color: var(--gold-main); transform: translateX(10px); }
-  .post-item-minimal:hover h3 { color: var(--gold-bright); }
-  .post-item-minimal:hover .arrow-icon { color: var(--gold-main); transform: translateX(5px); }
+  .post-meta { display: flex; gap: 15px; font-size: 0.8rem; color: #999; flex: 0 0 180px; }
+  .category { color: var(--gold-deep); font-weight: 700; }
+  .post-item-slim h3 { font-size: 1.35rem; flex: 1; margin: 0; transition: 0.3s; }
+  .hover-arrow { color: #eee; font-size: 1.2rem; transition: 0.3s; }
 
-  /* 최근 영상: 유튜브 스타일 그리드 */
-  .video-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 25px; }
-  .video-card { text-decoration: none; color: inherit; transition: 0.3s; }
-  .video-thumb-container {
-    position: relative; aspect-ratio: 16/9; border-radius: 8px; overflow: hidden;
-    background: #000; border: 1px solid #333;
-  }
-  .video-thumb-container img { width: 100%; height: 100%; object-fit: cover; opacity: 0.8; transition: 0.4s; }
-  .play-btn {
-    position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%);
-    font-size: 2.5rem; color: var(--gold-main); opacity: 0; transition: 0.4s;
-  }
-  .video-card h3 { font-size: 1.1rem; margin-top: 15px; line-height: 1.4; color: #ccc; }
+  .post-item-slim:hover a { border-color: var(--gold-deep); transform: translateY(-3px); box-shadow: 0 5px 15px rgba(179, 147, 77, 0.1); }
+  .post-item-slim:hover h3 { color: var(--gold-deep); }
+  .post-item-slim:hover .hover-arrow { color: var(--gold-deep); transform: translateX(5px); }
 
-  .video-card:hover img { opacity: 0.4; transform: scale(1.05); }
-  .video-card:hover .play-btn { opacity: 1; }
-  .video-card:hover h3 { color: var(--gold-main); }
+  /* --- 최근 영상 유튜브 썸네일 --- */
+  .video-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 20px; }
+  .video-card { text-decoration: none; color: inherit; }
+  .video-thumb-box { position: relative; aspect-ratio: 16/9; border-radius: 8px; overflow: hidden; background: #000; }
+  .video-thumb-box img { width: 100%; height: 100%; object-fit: cover; opacity: 0.9; transition: 0.4s; }
+  .play-icon { position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); color: white; font-size: 2rem; opacity: 0; transition: 0.3s; }
+  .video-title { font-size: 1rem; margin-top: 12px; line-height: 1.4; color: #444; }
 
-  .site-footer { padding: 80px 0; text-align: center; border-top: 1px solid #222; color: #666; font-size: 0.9rem; }
+  .video-card:hover img { opacity: 0.5; transform: scale(1.05); }
+  .video-card:hover .play-icon { opacity: 1; }
+  .video-card:hover .video-title { color: var(--gold-deep); }
+
+  .site-footer { padding: 80px 0; text-align: center; color: #bbb; font-size: 0.85rem; border-top: 1px solid #eee; }
 
   @media (max-width: 768px) {
-    .morph-word { font-size: 4rem; }
+    .morph-logo { font-size: 4rem; }
+    .post-item-slim a { flex-direction: column; align-items: flex-start; gap: 10px; }
     .video-grid { grid-template-columns: 1fr; }
-    .post-item-minimal h3 { font-size: 1.4rem; }
   }
 </style>
