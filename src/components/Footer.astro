@@ -1,24 +1,75 @@
 <footer class="site-footer">
   <div class="container footer-content">
-    <p class="copyright">© 2026 gedsc · 세계문학 기록실</p>
-    <p class="ai-notice">일부 콘텐츠는 AI의 도움을 받아 작성되었습니다.</p>
+    <div class="footer-nav">
+      <a href="/about">소개</a>
+      <a href="/contact">문의</a>
+      <a href="https://www.youtube.com/@gedsc-h2s" target="_blank">유튜브</a>
+      <a href="https://blog.naver.com/gedsc" target="_blank">블로그</a>
+      <a href="#">SNS</a>
+    </div>
+    <div class="footer-info">
+      <p class="copyright">© 2026 Gedsc · 세계문학 기록실</p>
+      <p class="ai-notice">일부 콘텐츠는 AI의 도움을 받아 작성되었습니다.</p>
+    </div>
   </div>
 </footer>
 
 <style>
   .site-footer {
-    padding: 80px 0 40px; /* 상단 여백을 넉넉히 줌 */
-    text-align: center;
-    color: var(--text-secondary);
-    font-size: 0.9rem;
+    padding: 60px 0;
+    background: #ffffff;
+    border-top: 1px solid #eeeeee;
+    color: #666666;
   }
 
-  .footer-content p {
+  .container {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 0 40px;
+  }
+
+  .footer-content {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 30px;
+  }
+
+  .footer-nav {
+    display: flex;
+    gap: 30px;
+  }
+
+  .footer-nav a {
+    text-decoration: none;
+    color: #1a1a1a;
+    font-size: 0.9rem;
+    font-weight: 500;
+    transition: opacity 0.2s;
+  }
+
+  .footer-nav a:hover {
+    opacity: 0.6;
+  }
+
+  .footer-info {
+    text-align: center;
+  }
+
+  .footer-info p {
     margin: 5px 0;
+    font-size: 0.85rem;
   }
 
   .ai-notice {
-    color: #999; /* 조금 더 연하게 */
-    font-size: 0.85rem;
+    color: #999;
+  }
+
+  @media (max-width: 768px) {
+    .footer-nav {
+      flex-wrap: wrap;
+      justify-content: center;
+      gap: 15px 30px;
+    }
   }
 </style>

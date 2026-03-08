@@ -21,4 +21,23 @@ const video = defineCollection({
   }),
 });
 
-export const collections = { review, video };
+const essays = defineCollection({
+  schema: z.object({
+    title: z.string(),
+    pubDate: z.coerce.date(),
+    description: z.string().optional(),
+    category: z.string().optional(),
+    draft: z.boolean().default(false),
+  }),
+});
+
+const series = defineCollection({
+  schema: z.object({
+    title: z.string(),
+    description: z.string().optional(),
+    order: z.number().optional(),
+    draft: z.boolean().default(false),
+  }),
+});
+
+export const collections = { review, video, essays, series };

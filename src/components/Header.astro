@@ -1,122 +1,112 @@
 <header class="site-header">
   <div class="header-container">
+    <div class="header-left">
+      <a href="/" class="logo">Gedsc</a>
+    </div>
+    
     <nav class="nav-links">
-      <a href="/">홈</a>
-      <a href="/review">북리뷰</a>
-      <a href="/video">영상리뷰</a>
+      <a href="/archive">Archive</a>
+      <a href="/video">Videos</a>
+      <a href="/essays">Essays</a>
+      <a href="/series">Series</a>
+      <a href="/about">About</a>
+      <a href="/newsletter" class="nav-cta">Newsletter</a>
     </nav>
 
-    <div class="gold-icon-container">
-      <a
-        href="https://blog.naver.com/gedsc"
-        target="_blank"
-        class="sophisticated-gold"
-      >
-        <svg width="22" height="22" viewBox="0 0 24 24" fill="none">
-          <path
-            class="icon-path"
-            d="M16.273 12.845L7.376 0H0V24H7.726V11.155L16.624 24H24V0H16.273V12.845Z"
-            fill="#5d4632"></path>
-        </svg>
-      </a>
-
-      <a
-        href="https://www.youtube.com/@gedsc-h2s"
-        target="_blank"
-        class="sophisticated-gold youtube-gold"
-      >
-        <svg width="24" height="18" viewBox="0 0 28 20" fill="none">
-          <path
-            class="icon-path"
-            d="M27.312 3.123c-.324-1.213-1.275-2.164-2.487-2.488C22.618 0 13.96 0 13.96 0S5.302 0 3.095.635c-1.212.324-2.163 1.275-2.487 2.488C0 5.33 0 10 0 10s0 4.67.608 7.123c.324 1.213 1.275 2.164 2.487 2.488C5.302 20 13.96 20 13.96 20s8.658 0 10.865-.635c1.212-.324 2.163-1.275 2.487-2.488C28 14.67 28 10 28 10s0-4.67-.688-6.877z"
-            fill="#5d4632"></path>
-          <path fill="#fff" d="M11.17 14.286l7.283-4.286-7.283-4.286v8.572z"
-          ></path>
-        </svg>
-      </a>
+    <div class="header-right">
+      <button class="search-btn" aria-label="Search">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>
+      </button>
     </div>
   </div>
 </header>
 
 <style>
   .site-header {
-    padding: 35px 0;
-    background: #f9f7f2;
-    border-bottom: 1px solid rgba(0, 0, 0, 0.05);
+    padding: 20px 0;
+    background: #ffffff;
+    border-bottom: 1px solid #eeeeee;
+    position: sticky;
+    top: 0;
+    z-index: 1000;
   }
 
   .header-container {
-    max-width: 1000px;
+    max-width: 1200px;
     margin: 0 auto;
     display: flex;
-    justify-content: space-between; /* 양 끝 정렬 */
+    justify-content: space-between;
     align-items: center;
-    padding: 0 20px;
+    padding: 0 40px;
   }
 
-  /* 메뉴를 왼쪽으로 밀착 */
+  .logo {
+    font-size: 1.5rem;
+    font-weight: 800;
+    color: #1a1a1a;
+    text-decoration: none;
+    letter-spacing: -0.5px;
+    text-transform: uppercase;
+  }
+
   .nav-links {
     display: flex;
-    gap: 35px;
+    gap: 32px;
+    align-items: center;
   }
 
   .nav-links a {
     text-decoration: none;
-    color: #555;
-    font-size: 0.95rem;
+    color: #4a4a4a;
+    font-size: 0.9rem;
     font-weight: 500;
-    transition: color 0.3s;
+    transition: color 0.2s;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
   }
 
   .nav-links a:hover {
-    color: #c19a6b; /* 호버 시 골드 포인트 컬러 */
+    color: #1a1a1a;
   }
 
-  /* 골드 아이콘 오른쪽 유지 */
-  .gold-icon-container {
+  .nav-cta {
+    background: #1a1a1a;
+    color: #ffffff !important;
+    padding: 8px 16px;
+    border-radius: 4px;
+    font-weight: 600 !important;
+  }
+
+  .nav-cta:hover {
+    background: #333333;
+  }
+
+  .header-right {
     display: flex;
-    gap: 15px;
     align-items: center;
   }
 
-  .sophisticated-gold {
+  .search-btn {
+    background: none;
+    border: none;
+    color: #1a1a1a;
+    cursor: pointer;
+    padding: 4px;
     display: flex;
-    justify-content: center;
     align-items: center;
-    width: 42px;
-    height: 42px;
-    border-radius: 50%;
-    background: linear-gradient(
-      135deg,
-      #f5e9d4 0%,
-      #d4b483 25%,
-      #c19a6b 50%,
-      #d4b483 75%,
-      #f5e9d4 100%
-    );
-    background-size: 400% 400%;
-    border: 0.5px solid rgba(255, 255, 255, 0.4);
-    box-shadow: 0 4px 12px rgba(193, 154, 107, 0.2);
-    animation: float 3s ease-in-out infinite;
-    transition: all 0.4s;
+    transition: opacity 0.2s;
   }
 
-  .sophisticated-gold:hover {
-    transform: scale(1.1);
-    animation-play-state: paused;
+  .search-btn:hover {
+    opacity: 0.6;
   }
 
-  .youtube-gold {
-    animation-delay: 0.5s;
-  }
-
-  @keyframes float {
-    0%,
-    100% {
-      transform: translateY(0px);
+  @media (max-width: 768px) {
+    .header-container {
+      padding: 0 20px;
     }
-    50% {
-      transform: translateY(-8px);
+    .nav-links {
+      display: none; /* 모바일 대응은 나중에 고려 */
     }
   }
 </style>
