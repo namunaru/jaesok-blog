@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>세계문학 기록실</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: 'Noto Serif KR', serif;
+      overflow-x: hidden;
+      background-color: #1a1a2e;
+    }
+
+    /* 🌅 시간대별 배경 순환 애니메이션 */
+    .homepage-background {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background-size: cover;
+      background-position: center;
+      background-repeat: no-repeat;
+      z-index: -1;
+      animation: timeChange 60s ease-in-out infinite;
+    }
+
+    @keyframes timeChange {
+      0% {
+        background-image: url('Gedsc_TimeFixed_1_Night.png');
+      }
+      23% {
+        background-image: url('Gedsc_TimeFixed_1_Night.png');
+      }
+      25% {
+        background-image: url('Gedsc_TimeFixed_2_Dawn.png');
+      }
+      48% {
+        background-image: url('Gedsc_TimeFixed_2_Dawn.png');
+      }
+      50% {
+        background-image: url('Gedsc_TimeFixed_3_Day.png');
+      }
+      73% {
+        background-image: url('Gedsc_TimeFixed_3_Day.png');
+      }
+      75% {
+        background-image: url('Gedsc_TimeFixed_4_Sunset.png');
+      }
+      98% {
+        background-image: url('Gedsc_TimeFixed_4_Sunset.png');
+      }
+      100% {
+        background-image: url('Gedsc_TimeFixed_1_Night.png');
+      }
+    }
+  </style>
+</head>
+<body>
+  <!-- 🌅 시간 변화 배경만 표시 -->
+  <div class="homepage-background"></div>
+</body>
+</html>

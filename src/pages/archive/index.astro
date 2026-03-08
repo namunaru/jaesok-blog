@@ -1,0 +1,323 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+---
+
+<BaseLayout title="Archive | GEDSC">
+  <div class="theme-modern archive-page">
+    <div class="container">
+      <header class="archive-header">
+        <h1 class="serif title">The Archive</h1>
+        <p class="subtitle">모든 문학 기록과 영상 탐색</p>
+        
+        <div class="archive-search-container">
+          <input 
+            type="text" 
+            id="archive-search" 
+            class="archive-search-input" 
+            placeholder="제목, 작가, 키워드를 입력하세요..." 
+            autocomplete="off"
+            autofocus
+          >
+          <div class="search-icon">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <circle cx="11" cy="11" r="8"></circle>
+              <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+            </svg>
+          </div>
+        </div>
+
+        <div class="filter-group">
+          <button class="filter-btn active" data-filter="all">전체</button>
+          <button class="filter-btn" data-filter="review">리뷰</button>
+          <button class="filter-btn" data-filter="video">영상</button>
+        </div>
+      </header>
+
+      <main>
+        <div id="search-status" class="search-status">로딩 중...</div>
+        <div id="results-grid" class="grid-layout">
+          <!-- JS 렌더링 영역 -->
+        </div>
+      </main>
+    </div>
+  </div>
+</BaseLayout>
+
+<script>
+  // 클라이언트 사이드 검색 로직
+  let allData: any[] = [];
+  const searchInput = document.getElementById('archive-search') as HTMLInputElement;
+  const resultsGrid = document.getElementById('results-grid');
+  const statusEl = document.getElementById('search-status');
+  const filterBtns = document.querySelectorAll('.filter-btn');
+  let currentFilter = 'all';
+
+  // 홈페이지에서 넘어온 검색어 파리미터 확인
+  const urlParams = new URLSearchParams(window.location.search);
+  const initialQuery = urlParams.get('q') || '';
+  if (initialQuery && searchInput) {
+    searchInput.value = initialQuery;
+  }
+
+  // 데이터 로드
+  async function fetchSearchData() {
+    try {
+      statusEl.textContent = '데이터를 불러오는 중...';
+      const response = await fetch('/api/search.json');
+      if (!response.ok) throw new Error('Network response was not ok');
+      allData = await response.json();
+      renderResults(initialQuery);
+    } catch (error) {
+      console.error('Error fetching search data:', error);
+      statusEl.textContent = '데이터를 불러오는데 실패했습니다.';
+    }
+  }
+
+  // 결과 렌더링 로직
+  function renderResults(query = '') {
+    if (!allData.length) return;
+
+    query = query.toLowerCase().trim();
+    
+    // 필터 & 검색어 매칭
+    const filteredData = allData.filter(item => {
+      // 탭 필터링 (all, review, video)
+      if (currentFilter !== 'all' && item.type !== currentFilter) return false;
+      
+      // 검색어 필터링
+      if (!query) return true;
+      
+      return (
+        item.title.toLowerCase().includes(query) ||
+        item.description.toLowerCase().includes(query) ||
+        item.category.toLowerCase().includes(query)
+      );
+    });
+
+    // 상태 업데이트
+    if (filteredData.length === 0) {
+      statusEl.textContent = query ? `'${query}'에 대한 검색 결과가 없습니다.` : '항목이 없습니다.';
+      resultsGrid.innerHTML = '';
+      return;
+    }
+
+    statusEl.textContent = `총 ${filteredData.length}개의 기록`;
+
+    // 마크업 생성
+    const html = filteredData.map(item => `
+      <article class="card-item archive-item">
+        <a href="${item.url}" ${item.type === 'review' ? 'target="_blank" rel="noopener noreferrer"' : ''}>
+          <div class="card-meta">
+            <span class="category type-${item.type}">${item.category || (item.type === 'video' ? 'Video' : 'Review')}</span>
+            <span class="date">${new Date(item.date).toLocaleDateString('ko-KR')}</span>
+          </div>
+          <h3 class="card-title serif">${item.title}</h3>
+          ${item.description ? `<p class="card-excerpt">${item.description}</p>` : ''}
+          <div class="card-footer">
+            <span class="read-more">${item.type === 'video' ? 'Watch Video' : 'Read Article'}</span>
+            <div class="arrow-icon">→</div>
+          </div>
+        </a>
+      </article>
+    `).join('');
+
+    resultsGrid.innerHTML = html;
+  }
+
+  // 이벤트 리스너
+  if (searchInput) {
+    searchInput.addEventListener('input', (e) => {
+      renderResults((e.target as HTMLInputElement).value);
+    });
+  }
+
+  filterBtns.forEach(btn => {
+    btn.addEventListener('click', (e) => {
+      const target = e.target as HTMLElement;
+      // 버튼 UI 상태 변경
+      filterBtns.forEach(b => b.classList.remove('active'));
+      target.classList.add('active');
+      
+      // 데이터 필터링 트리거
+      currentFilter = target.dataset.filter || 'all';
+      if (searchInput) renderResults(searchInput.value);
+    });
+  });
+
+  // 초기 실행
+  document.addEventListener('DOMContentLoaded', fetchSearchData);
+</script>
+
+<style is:global>
+  .archive-page {
+    padding: 60px 0 100px;
+    background: #f4f5f7; /* 배경 추가: 카드와 그림자가 돋보이도록 연한 회색 */
+    min-height: 100vh;
+  }
+
+  .archive-header {
+    text-align: center;
+    margin-bottom: 50px;
+  }
+
+  .title {
+    font-size: 3rem;
+    margin: 0 0 10px 0;
+    color: var(--text-primary);
+  }
+
+  .subtitle {
+    color: var(--text-secondary);
+    margin-bottom: 40px;
+  }
+
+  .archive-search-container {
+    position: relative;
+    max-width: 700px;
+    margin: 0 auto 30px;
+  }
+
+  .archive-search-input {
+    width: 100%;
+    padding: 20px 24px 20px 54px;
+    font-size: 1.2rem;
+    border: 2px solid var(--border-color);
+    border-radius: var(--radius-md);
+    background: white;
+    color: var(--text-primary);
+    outline: none;
+    transition: all 0.2s;
+    font-family: var(--font-sans);
+    box-shadow: var(--shadow-sm);
+  }
+
+  .archive-search-input:focus {
+    border-color: var(--accent-color);
+    box-shadow: 0 0 0 4px rgba(37, 99, 235, 0.1);
+  }
+
+  .search-icon {
+    position: absolute;
+    left: 20px;
+    top: 50%;
+    transform: translateY(-50%);
+    color: var(--text-secondary);
+    display: flex;
+    pointer-events: none;
+  }
+
+  .archive-search-input:focus + .search-icon {
+    color: var(--accent-color);
+  }
+
+  .filter-group {
+    display: flex;
+    justify-content: center;
+    gap: 12px;
+  }
+
+  .filter-btn {
+    padding: 8px 20px;
+    border-radius: 30px;
+    border: 1px solid var(--border-color);
+    background: white;
+    color: var(--text-secondary);
+    font-size: 0.95rem;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.2s;
+  }
+
+  .filter-btn:hover {
+    background: var(--bg-secondary);
+  }
+
+  .filter-btn.active {
+    background: var(--text-primary);
+    color: white;
+    border-color: var(--text-primary);
+  }
+
+  .search-status {
+    margin-bottom: 30px;
+    font-size: 0.95rem;
+    color: var(--text-secondary);
+    font-weight: 500;
+  }
+
+  /* --- Archive Grid List Styles --- */
+  .grid-layout {
+    display: flex;
+    flex-direction: column;
+    gap: 30px; /* 게시글 사이 간격 대폭 확보 */
+  }
+
+  .archive-item a {
+    display: block;
+    padding: 30px;
+    background: rgba(255, 255, 255, 0.95);
+    backdrop-filter: blur(10px);
+    border: 1px solid rgba(0,0,0,0.1);
+    border-radius: var(--radius-md);
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.08);
+    transition: all 0.3s cubic-bezier(0.165, 0.84, 0.44, 1);
+  }
+
+  .archive-item:hover a {
+    transform: translateY(-6px);
+    box-shadow: 0 12px 30px rgba(0, 0, 0, 0.15);
+    border-color: #cbd5e1;
+  }
+
+  .card-meta {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 16px;
+    font-size: 0.85rem;
+  }
+
+  .category {
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+  }
+
+  .category.type-video {
+    color: #e11d48; /* Red for video */
+  }
+  
+  .category.type-review {
+    color: var(--accent-color); 
+  }
+
+  .date { color: var(--text-secondary); }
+
+  .card-title {
+    font-size: 1.6rem;
+    margin: 0 0 12px 0;
+    line-height: 1.4;
+    color: var(--text-primary);
+  }
+
+  .card-excerpt {
+    color: var(--text-secondary);
+    font-size: 1rem;
+    line-height: 1.7;
+    margin: 0 0 24px 0;
+  }
+
+  .card-footer {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    font-size: 0.95rem;
+    font-weight: 600;
+    color: var(--text-secondary);
+    border-top: 1px solid var(--border-color);
+    padding-top: 20px;
+  }
+
+  .arrow-icon { transition: transform 0.3s; }
+  .archive-item:hover .arrow-icon { transform: translateX(5px); color: var(--accent-color); }
+  .archive-item:hover .read-more { color: var(--text-primary); }
+</style>

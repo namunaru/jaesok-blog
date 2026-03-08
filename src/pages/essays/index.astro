@@ -1,0 +1,141 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import { getCollection } from 'astro:content';
+
+const allReviews = await getCollection('review');
+const reviews = allReviews
+  .filter((post) => !post.data.draft)
+  .sort((a, b) => b.data.pubDate.valueOf() - a.data.pubDate.valueOf());
+---
+
+<BaseLayout title="Essays | GEDSC">
+  <div class="theme-modern archive-page">
+    <div class="container">
+      <header class="archive-header">
+        <h1 class="serif title">Essays</h1>
+        <p class="subtitle">작품들의 깊은 곳을 여는 리뷰와 에세이 공간입니다.</p>
+      </header>
+
+      <main>
+        <div class="grid-layout">
+          {reviews.length > 0 ? (
+            reviews.map((post) => (
+              <article class="card-item archive-item">
+                <a href={post.data.link} target="_blank" rel="noopener noreferrer">
+                  <div class="card-meta">
+                    <span class="category type-review">{post.data.category || 'Review'}</span>
+                    <span class="date">{post.data.pubDate.toLocaleDateString('ko-KR')}</span>
+                  </div>
+                  <h3 class="card-title serif">{post.data.title}</h3>
+                  <p class="card-excerpt">{post.data.description || '에세이 읽어보기...'}</p>
+                  <div class="card-footer">
+                    <span class="read-more">Read Article</span>
+                    <div class="arrow-icon">→</div>
+                  </div>
+                </a>
+              </article>
+            ))
+          ) : (
+            <p style="text-align: center; color: var(--text-secondary); padding: 50px 0;">아직 기록된 에세이가 없습니다.</p>
+          )}
+        </div>
+      </main>
+    </div>
+  </div>
+</BaseLayout>
+
+<style>
+  .archive-page {
+    padding: 60px 0 100px;
+    background: #f4f5f7; /* 배경 추가: 카드와 그림자가 돋보이도록 연한 회색 */
+    min-height: 100vh;
+  }
+
+  .archive-header {
+    text-align: center;
+    margin-bottom: 50px;
+  }
+
+  .title {
+    font-size: 3rem;
+    margin: 0 0 10px 0;
+    color: var(--text-primary);
+  }
+
+  .subtitle {
+    color: var(--text-secondary);
+    margin-bottom: 40px;
+  }
+
+  /* --- Archive Grid List Styles --- */
+  .grid-layout {
+    display: flex;
+    flex-direction: column;
+    gap: 30px; /* 게시글 사이 간격 대폭 확보 */
+  }
+
+  .archive-item a {
+    display: block;
+    padding: 30px;
+    background: rgba(255, 255, 255, 0.95); /* 거의 불투명한 흰색으로 변경 */
+    backdrop-filter: blur(10px);
+    border: 1px solid rgba(0,0,0,0.1); /* 테두리를 조금 더 진하게 */
+    border-radius: var(--radius-md);
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.08); /* 기본 그림자 추가 */
+    transition: all 0.3s cubic-bezier(0.165, 0.84, 0.44, 1);
+  }
+
+  .archive-item:hover a {
+    transform: translateY(-6px);
+    box-shadow: 0 12px 30px rgba(0, 0, 0, 0.15); /* 호버 시 그림자 강화 */
+    border-color: #cbd5e1;
+  }
+
+  .card-meta {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 16px;
+    font-size: 0.85rem;
+  }
+
+  .category {
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+  }
+  
+  .category.type-review {
+    color: var(--accent-color); 
+  }
+
+  .date { color: var(--text-secondary); }
+
+  .card-title {
+    font-size: 1.6rem;
+    margin: 0 0 12px 0;
+    line-height: 1.4;
+    color: var(--text-primary);
+  }
+
+  .card-excerpt {
+    color: var(--text-secondary);
+    font-size: 1rem;
+    line-height: 1.7;
+    margin: 0 0 24px 0;
+  }
+
+  .card-footer {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    font-size: 0.95rem;
+    font-weight: 600;
+    color: var(--text-secondary);
+    border-top: 1px solid var(--border-color);
+    padding-top: 20px;
+  }
+
+  .arrow-icon { transition: transform 0.3s; }
+  .archive-item:hover .arrow-icon { transform: translateX(5px); color: var(--accent-color); }
+  .archive-item:hover .read-more { color: var(--text-primary); }
+</style>
