@@ -1,0 +1,46 @@
+---
+// src/pages/series/index.astro
+import BaseLayout from '../../layouts/BaseLayout.astro';
+
+const series = [
+  {
+    title: "세계문학 여행",
+    description: "고전부터 현대까지, 시대를 관통하는 명작들과의 대화",
+    link: "/series/literature",
+    icon: "📚"
+  },
+  {
+    title: "신화, 영원한 이야기",
+    description: "그리스·로마 신화 속 인간의 원형과 현대적 의미 탐구",
+    link: "/series/mythology",
+    icon: "🏛️"
+  },
+  {
+    title: "일상 속 철학",
+    description: "삶의 본질을 묻는 철학자들과 함께하는 사유의 여정",
+    link: "/series/philosophy",
+    icon: "🤔"
+  }
+];
+---
+
+<BaseLayout title="Series | GEDSC">
+  <div class="container" style="padding: 100px 20px; max-width: 900px; margin: 0 auto;">
+    
+    <h1 class="serif" style="font-size: 3rem; margin-bottom: 20px; text-align: center;">Series</h1>
+    <p style="color: var(--text-secondary); font-size: 1.1rem; text-align: center; margin-bottom: 5rem;">
+      주제별로 엮은 연속 콘텐츠를 만나보세요.
+    </p>
+
+    <div style="display: grid; gap: 3rem;">
+      {series.map((s) => (
+        <a href={s.link} style="text-decoration: none; color: inherit; display: block; padding: 2rem; border: 1px solid var(--border-color); border-radius: 8px; transition: all 0.3s;">
+          <div style="font-size: 3rem; margin-bottom: 1rem;">{s.icon}</div>
+          <h2 style="font-size: 1.5rem; margin-bottom: 1rem; font-weight: 600;">{s.title}</h2>
+          <p style="color: var(--text-secondary); line-height: 1.7;">{s.description}</p>
+        </a>
+      ))}
+    </div>
+
+  </div>
+</BaseLayout>
